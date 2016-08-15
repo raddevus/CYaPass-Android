@@ -1,0 +1,163 @@
+package us.raddev.drawpass;
+
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
+import android.util.Log;
+import android.widget.ArrayAdapter;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.UUID;
+
+/**
+ * Created by roger.deutsch on 7/6/2016.
+ */
+public class ConnectThread extends Thread {
+    private final BluetoothSocket mmSocket;
+    private final BluetoothDevice mmDevice;
+    private ArrayAdapter<String> logViewAdapter;
+    //private final InputStream mmInStream;
+    private OutputStream mmOutStream;
+    private InputStream mmInStream;
+
+    public ConnectThread(BluetoothDevice device, UUID uuid,  ArrayAdapter<String> logViewAdapter) {
+        // Use a temporary object that is later assigned to mmSocket,
+        // because mmSocket is final
+
+        BluetoothSocket tmp = null;
+        mmDevice = device;
+        this.logViewAdapter = logViewAdapter;
+        logViewAdapter.add("in ConnectThread()...");
+        logViewAdapter.notifyDataSetChanged();
+        OutputStream tmpOut;
+        InputStream tmpIn;
+
+        // Get a BluetoothSocket to connect with the given BluetoothDevice
+        try {
+            // MY_UUID is the app's UUID string, also used by the server code
+            Log.d("MainActivity", "creating RfcommSocket...");
+            logViewAdapter.add("creating RfcommSocket...");
+            logViewAdapter.notifyDataSetChanged();
+            tmp = device.createRfcommSocketToServiceRecord(uuid);
+            Log.d("MainActivity", "created.");
+            logViewAdapter.add("created");
+            logViewAdapter.notifyDataSetChanged();
+        } catch (IOException e) {
+            Log.d("MainActivity", "FAILED! : " + e.getMessage());
+            logViewAdapter.add("FAILED! : " + e.getMessage());
+            logViewAdapter.notifyDataSetChanged();
+        }
+        mmSocket = tmp;
+        try {
+            tmpOut = tmp.getOutputStream();
+            mmOutStream = tmpOut;
+            tmpIn = mmSocket.getInputStream();
+            mmInStream = tmpIn;
+            //mmInStream = tmp.getInputStream();
+        }
+        catch (IOException iox) {
+            Log.d("MainActivity", "failed to get stream : " + iox.getMessage());
+        }
+        catch (NullPointerException npe){
+            Log.d("MainActivity", "null pointer on stream : " + npe.getMessage());
+
+        }
+
+    }
+
+    public void writeYes() {
+        try {
+            byte [] outByte = new byte[]{121};
+
+            mmOutStream.write(outByte);
+            logViewAdapter.add("Success; Wrote YES!");
+            logViewAdapter.notifyDataSetChanged();
+
+        } catch (IOException e) { }
+    }
+
+    public void writeNo() {
+        try {
+            byte [] outByte = new byte[]{110};
+            mmOutStream.write(outByte);
+            logViewAdapter.add("Success; Wrote NO");
+            logViewAdapter.notifyDataSetChanged();
+
+            mmOutStream.write(outByte);
+        } catch (IOException e) { }
+    }
+
+    public void writeMessage(String message) {
+        try {
+            byte [] outByte = new byte[message.length()];
+            outByte = message.getBytes();
+            mmOutStream.write(outByte);
+            //logViewAdapter.add("Success; Wrote YES!");
+            logViewAdapter.notifyDataSetChanged();
+
+        } catch (IOException e) { }
+    }
+
+    public void run(BluetoothAdapter btAdapter) {
+        // Cancel discovery because it will slow down the connection
+        btAdapter.cancelDiscovery();
+
+        try {
+            // Connect the device through the socket. This will block
+            // until it succeeds or throws an exception
+            Log.d("MainActivity", "Connecting...");
+            logViewAdapter.add("Connecting...");
+            logViewAdapter.notifyDataSetChanged();
+            mmSocket.connect();
+            Log.d("MainActivity", "Connected");
+            logViewAdapter.add("Connected");
+            logViewAdapter.notifyDataSetChanged();
+            if (mmOutStream != null) {
+                mmOutStream.write(new byte[]{65, 66});
+                logViewAdapter.add("Success; Wrote 2 bytes!");
+                logViewAdapter.notifyDataSetChanged();
+            }
+        } catch (IOException connectException) {
+            // Unable to connect; close the socket and get out
+            Log.d("MainActivity", "Failed! : " + connectException.getMessage());
+            logViewAdapter.add("Failed! : " + connectException.getMessage());
+            logViewAdapter.notifyDataSetChanged();
+            try {
+                mmSocket.close();
+            } catch (IOException closeException) { }
+            return;
+        }
+
+        // Do work to manage the connection (in a separate thread)
+        //manageConnectedSocket(mmSocket);
+    }
+
+    public void run() {
+        byte[] buffer = new byte[1024];  // buffer store for the stream
+        int bytes; // bytes returned from read()
+        logViewAdapter.add("Reading from BT!...");
+        logViewAdapter.notifyDataSetChanged();
+        // Keep listening to the InputStream until an exception occurs
+        while (true) {
+            try {
+                // Read from the InputStream
+                bytes = mmInStream.read(buffer);
+                // Send the obtained bytes to the UI activity
+                logViewAdapter.add(String.valueOf(bytes));
+                logViewAdapter.notifyDataSetChanged();
+            } catch (IOException e) {
+                logViewAdapter.add("IOException on read: " + e.getMessage());
+                logViewAdapter.notifyDataSetChanged();
+            }
+        }
+    }
+
+    /** Will cancel an in-progress connection, and close the socket */
+    public void cancel() {
+        try {
+            mmSocket.close();
+        } catch (IOException e) { }
+    }
+}
