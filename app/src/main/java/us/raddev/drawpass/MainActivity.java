@@ -19,7 +19,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.Layout;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -34,7 +36,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -61,6 +62,11 @@ public class MainActivity extends AppCompatActivity {
     private static String password;
     public static EditText siteKey;
     private static boolean isPwdVisible = true;
+    public static boolean isAddUppercase = false;
+    public static boolean isAddSpecialChars = false;
+    public static boolean isMaxLength = false;
+    static String specialChars;
+    static int maxLength = 25;
 
     private LinearLayout layout1;
 
@@ -82,14 +88,14 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+/*        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });
+        }); */
 
     }
 
@@ -200,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
                     rootView = inflater.inflate(R.layout.fragment_main, container, false);
                     final GridView gv = new us.raddev.drawpass.GridView(rootView.getContext());
                     LinearLayout mainlayout1 = (LinearLayout) rootView.findViewById(R.id.drawcross);
-                    mainlayout1.addView(gv);
+                    mainlayout1.addView(gv,gv.cellSize*7,gv.cellSize*7);
                     passwordText = (EditText) rootView.findViewById(R.id.password);
                     siteKey = (EditText) rootView.findViewById(R.id.siteKey);
                     final CheckBox showPwdCheckBox = (CheckBox)rootView.findViewById(R.id.showPwd);
@@ -245,8 +251,6 @@ public class MainActivity extends AppCompatActivity {
                 case 2:
                 {
                     rootView = inflater.inflate(R.layout.fragment_settings, container, false);
-                    TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-                    textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
 
                     final ListView listView;
                     final ListView logView;
@@ -261,7 +265,12 @@ public class MainActivity extends AppCompatActivity {
                     Button yesButton;
                     Button noButton;
                     Button sendButton;
+                    final CheckBox addUpperCaseCheckBox;
+                    final CheckBox addCharsCheckBox;
+                    final CheckBox maxLengthCheckBox;
                     final EditText outText;
+                    EditText specialCharsText;
+                    EditText maxLengthText;
 
                     listView = (ListView) rootView.findViewById(R.id.mainListView);
                     logView = (ListView) rootView.findViewById(R.id.logView);
@@ -269,6 +278,13 @@ public class MainActivity extends AppCompatActivity {
                     noButton = (Button)rootView.findViewById(R.id.NoButton);
                     sendButton = (Button)rootView.findViewById(R.id.sendButton);
                     outText = (EditText)rootView.findViewById(R.id.outText);
+                    addUpperCaseCheckBox = (CheckBox)rootView.findViewById(R.id.addUCaseCheckBox);
+                    addCharsCheckBox = (CheckBox)rootView.findViewById(R.id.addCharsCheckBox);
+                    maxLengthCheckBox = (CheckBox)rootView.findViewById(R.id.maxLengthCheckBox);
+                    maxLengthText = (EditText)rootView.findViewById(R.id.maxLengthEditText);
+                    specialCharsText = (EditText)rootView.findViewById(R.id.specialCharsTextBox);
+
+                    maxLengthText.setText("25");
 
                     adapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_list_item_1, listViewItems);
                     listView.setAdapter(adapter);
@@ -276,10 +292,6 @@ public class MainActivity extends AppCompatActivity {
                     logViewAdapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_list_item_1, logViewItems);
                     logView.setAdapter(logViewAdapter);
 
-                    for (int x = 0;x <=2;x++){
-                        adapter.add("test : " + String.valueOf(x));
-
-                    }
                     adapter.notifyDataSetChanged();
 
                     btAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -291,6 +303,42 @@ public class MainActivity extends AppCompatActivity {
                         pairedDevices = GetPairedDevices(btAdapter);
                         //DiscoverAvailableDevices();
                     }
+
+                    addUpperCaseCheckBox.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                        public void onClick(View view) {
+                            if (addUpperCaseCheckBox.isChecked()){
+                                MainActivity.isAddUppercase = true;
+                            }
+                            else{
+                                MainActivity.isAddUppercase = false;
+                            }
+                        }
+                    });
+
+                    addCharsCheckBox.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (addCharsCheckBox.isChecked()){
+                                MainActivity.isAddSpecialChars = true;
+                            }
+                            else{
+                                MainActivity.isAddSpecialChars = false;
+                            }
+                        }
+                    });
+
+                    maxLengthCheckBox.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (maxLengthCheckBox.isChecked()){
+                                MainActivity.isMaxLength = true;
+                            }
+                            else{
+                                MainActivity.isMaxLength = false;
+                            }
+                        }
+                    });
 
                     noButton.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -305,6 +353,49 @@ public class MainActivity extends AppCompatActivity {
                             ct.writeYes();
                         }
                     });
+
+                    specialCharsText.addTextChangedListener(new TextWatcher() {
+
+                        @Override
+                        public void afterTextChanged(Editable s) {
+                            MainActivity.specialChars = s.toString();
+                        }
+
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                            // TODO Auto-generated method stub
+
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                        }
+
+                    });
+                    maxLengthText.addTextChangedListener(new TextWatcher() {
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        if (s != null) {
+                            if (s.length() > 0) {
+                                MainActivity.maxLength = Integer.parseInt(s.toString());
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                        // TODO Auto-generated method stub
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                });
 
                     sendButton.setOnClickListener(new View.OnClickListener() {
                         @Override

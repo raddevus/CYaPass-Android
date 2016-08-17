@@ -37,11 +37,11 @@ public class GridView extends View {
     private Point previousPoint;
     private LineSegments LineSegments = new LineSegments();
     private Canvas xCanvas;
-    private int viewWidth;
-    private int viewHeight;
+    public int viewWidth;
+    public int viewHeight;
 
     int numOfCells = 5;
-    int cellSize; //125
+    public int cellSize; //125
 
     public GridView(Context context) {
         super(context);
@@ -218,8 +218,8 @@ public class GridView extends View {
         for (int x = 0; x < 6; x++) {
             for (int y = 0; y < 6; y++) {
                 _allPosts.add(new Point(leftOffset + (centerPoint * x), topOffset +(centerPoint * y) ));
-                Log.d("MainActivity", "Point.x = " + String.valueOf(leftOffset + (centerPoint * x)));
-                Log.d("MainActivity", "Point.y = " + String.valueOf(topOffset + (centerPoint * y)));
+                Log.d("Extra", "Point.x = " + String.valueOf(leftOffset + (centerPoint * x)));
+                Log.d("Extra", "Point.y = " + String.valueOf(topOffset + (centerPoint * y)));
             }
         }
     }
@@ -235,12 +235,46 @@ public class GridView extends View {
             for (byte b : hash) {
                 sb.append(String.format("%02x", b));
             }
+            if (MainActivity.isAddSpecialChars){
+                sb.insert(3,MainActivity.specialChars);
+            }
+            if (MainActivity.isAddUppercase){
+                Log.d("MainActivity", "calling addUpperCase()");
+                int firstLetterIndex = addUpperCase(sb.toString());
+                Log.d("MainActivity", "firstLetterIndex : " + String.valueOf(firstLetterIndex));
+                if (firstLetterIndex >= 0) {
+                    // get the string, uppercase it, get the uppercased char at location
+                    Log.d("MainActivity", "calling sb.setCharAt()");
+                    Log.d("MainActivity", "value : " + String.valueOf(sb.toString().toUpperCase().charAt(firstLetterIndex)));
+                    sb.setCharAt(firstLetterIndex, sb.toString().toUpperCase().charAt(firstLetterIndex));
+                }
+            }
+            if (MainActivity.isMaxLength) {
+                StringBuilder temp = new StringBuilder();
+                temp.insert(0,sb.substring(0,MainActivity.maxLength));
+                sb = temp;
+            }
             Log.d("MainActivity", sb.toString());
             MainActivity.SetPassword( sb.toString());
         }
         catch (NoSuchAlgorithmException nsa){
 
         }
+    }
+
+    private int addUpperCase(String sb){
+        char [] entireString = new char[sb.length()-1];
+        int indexCounter=0;
+        sb.getChars(0,sb.length()-1,entireString,0);
+        for (char c : entireString)
+        {
+            if (Character.isLetter(c))
+            {
+                return indexCounter;
+            }
+            indexCounter++;
+        }
+        return -1;
     }
 
     private void DrawGridLines(){
