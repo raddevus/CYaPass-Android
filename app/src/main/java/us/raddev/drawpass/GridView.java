@@ -39,6 +39,7 @@ public class GridView extends View {
     private Canvas xCanvas;
     public int viewWidth;
     public int viewHeight;
+    private Point currentPoint;
 
     int numOfCells = 5;
     public int cellSize; //125
@@ -93,9 +94,11 @@ public class GridView extends View {
                     String output = "Touch coordinates : " +
                             String.valueOf(touchX) + "x" + String.valueOf(touchY);
                     //Toast.makeText(v.getContext(), output, Toast.LENGTH_SHORT).show();
-                    if (SelectNewPoint(new Point(touchX,touchY))) {
+                    currentPoint = new Point(touchX,touchY);
+                    if (SelectNewPoint(currentPoint)) {
                         v.invalidate();
                         CalculateGeometricSaltValue();
+                        //currentPoint = null;
                     }
                 }
                 return true;
@@ -111,8 +114,15 @@ public class GridView extends View {
     private void DrawUserShapes(Canvas canvas){
         Paint paint = new Paint();
         paint.setColor(Color.BLUE);
-        paint.setStrokeWidth(5);
+        paint.setStrokeWidth(8);
+        paint.setStyle(Paint.Style.STROKE);
+        if (LineSegments.size() > 0) {
+
+        }
         for (int j=0;j < LineSegments.size();j++) {
+            canvas.drawCircle((float) LineSegments.get(j).Start.x,
+                    (float) LineSegments.get(j).Start.y,
+                    30, paint);
             canvas.drawLine(LineSegments.get(j).Start.x, LineSegments.get(j).Start.y,
                     LineSegments.get(j).End.x,
                     LineSegments.get(j).End.y, paint);
@@ -136,6 +146,20 @@ public class GridView extends View {
         }
     }
 
+    private void DrawHighlight(Point p){
+        Log.d("MainActivity", "DrawHighlight()...");
+        Log.d("MainActivity", p.toString());
+        Paint paint = new Paint();
+        paint.setColor(Color.CYAN);
+        paint.setStrokeWidth(8);
+        paint.setStyle(Paint.Style.STROKE);
+
+        xCanvas.drawCircle( p.x,
+                 p.y,
+                30, paint);
+
+    }
+
     private boolean SelectNewPoint(Point p)
     {
         boolean isNewPoint = false;
@@ -153,9 +177,9 @@ public class GridView extends View {
                 }
                 userShape.add(currentPoint);
                 isNewPoint = true;
-                //DrawHighlight();
-            }
 
+            }
+            //DrawHighlight(currentPoint);
             previousPoint = currentPoint;
         }
         return isNewPoint;
@@ -236,7 +260,7 @@ public class GridView extends View {
                 sb.append(String.format("%02x", b));
             }
             if (MainActivity.isAddSpecialChars){
-                sb.insert(3,MainActivity.specialChars);
+                sb.insert(2,MainActivity.specialChars);
             }
             if (MainActivity.isAddUppercase){
                 Log.d("MainActivity", "calling addUpperCase()");
@@ -315,6 +339,9 @@ public class GridView extends View {
         DrawPosts();
         DrawGridLines();
         DrawUserShapes(canvas);
+        if (userShape.size() >0) {
+            DrawHighlight(userShape.get(userShape.size()-1));
+        }
     }
 
     private Point HitTest(Point p)
