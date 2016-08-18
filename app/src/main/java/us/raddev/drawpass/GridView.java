@@ -2,6 +2,7 @@ package us.raddev.drawpass;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -33,7 +34,7 @@ public class GridView extends View {
     private int postWidth;
     private int leftOffset;
     private int topOffset = 20;
-    private List<Point> userShape = new ArrayList<Point>();
+    public List<Point> userShape = new ArrayList<Point>();
     private Point previousPoint;
     private LineSegments LineSegments = new LineSegments();
     private Canvas xCanvas;
@@ -43,9 +44,11 @@ public class GridView extends View {
 
     int numOfCells = 5;
     public int cellSize; //125
+    private Context _context;
 
     public GridView(Context context) {
         super(context);
+        _context = context;
         float density = getResources().getDisplayMetrics().density;
         Log.d("MainActivity", "density : " + String.valueOf(density));
         int densityDPI = getResources().getDisplayMetrics().densityDpi;
@@ -59,7 +62,7 @@ public class GridView extends View {
 
         Log.d("MainActivity", "id: " + String.valueOf(vx.getId()));
         //postWidth = ((viewWidth / 2) / 6) /5;
-        postWidth = 13;
+        postWidth = (int)viewWidth / 58;
         cellSize = centerPoint = (int)viewWidth /7;
         leftOffset = viewWidth - ((numOfCells + 1)* cellSize); //(viewWidth / densityDPI) * 6;
 
@@ -150,13 +153,19 @@ public class GridView extends View {
         Log.d("MainActivity", "DrawHighlight()...");
         Log.d("MainActivity", p.toString());
         Paint paint = new Paint();
-        paint.setColor(Color.CYAN);
+        if (userShape.size() == 1) {
+            paint.setColor(Color.CYAN);
+        }
+        else
+        {
+            paint.setColor(Color.BLUE);
+        }
         paint.setStrokeWidth(8);
         paint.setStyle(Paint.Style.STROKE);
 
         xCanvas.drawCircle( p.x,
                  p.y,
-                30, paint);
+                postWidth + 10, paint);
 
     }
 
@@ -250,7 +259,8 @@ public class GridView extends View {
 
     //@TargetApi(19)
     private void CreateHash(){
-        String site = MainActivity.siteKey.getText().toString();  //"amazon";
+        //String site = MainActivity.siteKey.getText().toString();  //"amazon";
+        String site = MainActivity.siteSpinner.getSelectedItem().toString();
         String text = LineSegments.PostValue + site;
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -280,6 +290,11 @@ public class GridView extends View {
             }
             Log.d("MainActivity", sb.toString());
             MainActivity.SetPassword( sb.toString());
+
+            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) _context.getSystemService(Context.CLIPBOARD_SERVICE);
+            android.content.ClipData clip = android.content.ClipData.newPlainText("Copied Text", sb.toString());
+            clipboard.setPrimaryClip(clip);
+
         }
         catch (NoSuchAlgorithmException nsa){
 
@@ -339,7 +354,7 @@ public class GridView extends View {
         DrawPosts();
         DrawGridLines();
         DrawUserShapes(canvas);
-        if (userShape.size() >0) {
+        if (userShape.size() > 0) {
             DrawHighlight(userShape.get(userShape.size()-1));
         }
     }

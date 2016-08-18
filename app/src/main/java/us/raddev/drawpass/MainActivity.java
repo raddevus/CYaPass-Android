@@ -36,6 +36,8 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -58,9 +60,9 @@ public class MainActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
 
-    private static EditText passwordText;
+    private static TextView passwordText;
     private static String password;
-    public static EditText siteKey;
+    public static Spinner siteSpinner;
     private static boolean isPwdVisible = true;
     public static boolean isAddUppercase = false;
     public static boolean isAddSpecialChars = false;
@@ -197,6 +199,14 @@ public class MainActivity extends AppCompatActivity {
             return pairedDevices;
         }
 
+        private void clearClipboard(){
+            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            //android.content.ClipData clip = android.content.ClipData.newPlainText("", "");
+            android.content.ClipData clip = android.content.ClipData.newPlainText(null,null);
+            clipboard.setPrimaryClip(clip);
+
+        }
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -207,20 +217,31 @@ public class MainActivity extends AppCompatActivity {
                     final GridView gv = new us.raddev.drawpass.GridView(rootView.getContext());
                     LinearLayout mainlayout1 = (LinearLayout) rootView.findViewById(R.id.drawcross);
                     mainlayout1.addView(gv,gv.cellSize*7,gv.cellSize*7);
-                    passwordText = (EditText) rootView.findViewById(R.id.password);
-                    siteKey = (EditText) rootView.findViewById(R.id.siteKey);
+                    passwordText = (TextView) rootView.findViewById(R.id.password);
+                    siteSpinner = (Spinner)rootView.findViewById(R.id.siteSpinner);
                     final CheckBox showPwdCheckBox = (CheckBox)rootView.findViewById(R.id.showPwd);
                     showPwdCheckBox.setChecked(true);
-                    Button clearGridButton = (Button) rootView.findViewById(R.id.clearGridButton);
+                    final Button clearGridButton = (Button) rootView.findViewById(R.id.clearGridButton);
                     Button genPasswordButton = (Button) rootView.findViewById(R.id.genPasswordButton);
 
-                    clearGridButton.setOnClickListener(new View.OnClickListener() {
+                    ArrayList<SiteInfo> spinnerItems = new ArrayList<SiteInfo>();
+                    final ArrayAdapter<SiteInfo> spinnerAdapter = new ArrayAdapter<SiteInfo>(getContext(), android.R.layout.simple_list_item_1, spinnerItems);
+                    siteSpinner.setAdapter(spinnerAdapter);
+                    spinnerAdapter.add(new SiteInfo ("[--choose site--]"));
+                    spinnerAdapter.add(new SiteInfo("amazon"));
+                    spinnerAdapter.add(new SiteInfo("computer"));
+                    spinnerAdapter.notifyDataSetChanged();
+
+                    clearGridButton.dckListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             gv.ClearGrid();
+                            passwordText.setText("");
+                            clearClipboard();
                             gv.invalidate();
                         }
                     });
+
 
                     showPwdCheckBox.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -243,6 +264,18 @@ public class MainActivity extends AppCompatActivity {
                     genPasswordButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            if (MainActivity.siteSpinner.getSelectedItemPosition() <= 0){
+                                return; // add message box need to select a valid site
+                            }
+                            if (gv.userShape != null){
+                                if (gv.userShape.size() <= 0){
+                                    return; // add message box to warn user
+                                }
+                            }
+                            else{
+                                return; // no points, it's null
+                            }
+
                             gv.GeneratePassword();
                         }
                     });
