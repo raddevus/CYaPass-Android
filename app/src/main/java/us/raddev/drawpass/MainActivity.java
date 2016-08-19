@@ -310,7 +310,7 @@ public class MainActivity extends AppCompatActivity {
                     final CheckBox showPwdCheckBox = (CheckBox)rootView.findViewById(R.id.showPwd);
                     showPwdCheckBox.setChecked(true);
                     final Button clearGridButton = (Button) rootView.findViewById(R.id.clearGridButton);
-                    Button genPasswordButton = (Button) rootView.findViewById(R.id.genPasswordButton);
+                    Button deleteSiteButton = (Button) rootView.findViewById(R.id.deleteSite);
                     loadSitesFromPrefs(rootView);
                     siteSpinner.setAdapter(spinnerAdapter);
 
@@ -319,7 +319,7 @@ public class MainActivity extends AppCompatActivity {
                     //spinnerAdapter.add(new SiteInfo("amazon"));
                     //spinnerAdapter.add(new SiteInfo("computer"));
 
-                    genPasswordButton.requestFocus();
+                    deleteSiteButton.requestFocus();
 
                     clearGridButton.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -370,18 +370,13 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
 
-                    genPasswordButton.setOnClickListener(new View.OnClickListener() {
+                    deleteSiteButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             if (MainActivity.siteSpinner.getSelectedItemPosition() <= 0){
                                 return; // add message box need to select a valid site
                             }
-                            if (gv.isLineSegmentComplete()){
-                                gv.GeneratePassword();
-                            }
-                            else{
-                                // display message to user
-                            }
+                            // write delete site code here
                         }
                     });
                     break;
