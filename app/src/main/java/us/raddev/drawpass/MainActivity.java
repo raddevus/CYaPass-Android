@@ -230,6 +230,7 @@ public class MainActivity extends AppCompatActivity {
                     spinnerAdapter.add(new SiteInfo("amazon"));
                     spinnerAdapter.add(new SiteInfo("computer"));
                     spinnerAdapter.notifyDataSetChanged();
+                    genPasswordButton.requestFocus();
 
                     clearGridButton.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -333,6 +334,7 @@ public class MainActivity extends AppCompatActivity {
                     specialCharsText = (EditText)rootView.findViewById(R.id.specialCharsTextBox);
 
                     maxLengthText.setText("25");
+                    addUpperCaseCheckBox.requestFocus();
 
                     adapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_list_item_1, listViewItems);
                     listView.setAdapter(adapter);
