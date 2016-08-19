@@ -101,7 +101,7 @@ public class GridView extends View {
                     if (SelectNewPoint(currentPoint)) {
                         v.invalidate();
                         CalculateGeometricSaltValue();
-                        //currentPoint = null;
+                        GeneratePassword();
                     }
                 }
                 return true;
@@ -276,6 +276,9 @@ public class GridView extends View {
     private void CreateHash(){
         //String site = MainActivity.siteKey.getText().toString();  //"amazon";
         if (MainActivity.siteSpinner.getSelectedItemPosition() <= 0){
+            return;
+        }
+        if (!isLineSegmentComplete()){
             return;
         }
         String site = MainActivity.siteSpinner.getSelectedItem().toString();
