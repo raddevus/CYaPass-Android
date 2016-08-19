@@ -232,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
                     spinnerAdapter.add(new SiteInfo("computer"));
                     spinnerAdapter.notifyDataSetChanged();
 
-                    clearGridButton.dckListener(new View.OnClickListener() {
+                    clearGridButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             gv.ClearGrid();
