@@ -92,8 +92,8 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //addNewSite(R.id.siteText);
-                clearAllUserPrefs(view);
+                addNewSite(R.id.siteText);
+                //clearAllUserPrefs(view);
             }
         });
 
@@ -272,13 +272,22 @@ public class MainActivity extends AppCompatActivity {
             String sites = sitePrefs.getString("sites", "");
 
             String[] allSites = sites.split(",");
+            Log.d("MainActivity", "sites : " + sites);
+            Log.d("MainActivity", "Reading items from prefs");
             for (String s : allSites){
-                spinnerAdapter.add(new SiteInfo(s));
+                Log.d("MainActivity", "s : " + s);
+                if (s != "") {
+                    spinnerAdapter.add(new SiteInfo(s));
+                }
             }
+            spinnerAdapter.notifyDataSetChanged();
         }
 
         private static void initializeSpinnerAdapter(View v){
-            spinnerAdapter = new ArrayAdapter<SiteInfo>(v.getContext(), android.R.layout.simple_list_item_1, spinnerItems);
+            if (spinnerAdapter == null) {
+                spinnerAdapter = new ArrayAdapter<SiteInfo>(v.getContext(), android.R.layout.simple_list_item_1, spinnerItems);
+            }
+            spinnerAdapter.clear();
             spinnerAdapter.add(new SiteInfo ("select site"));
             spinnerAdapter.notifyDataSetChanged();
         }
@@ -302,7 +311,7 @@ public class MainActivity extends AppCompatActivity {
                     showPwdCheckBox.setChecked(true);
                     final Button clearGridButton = (Button) rootView.findViewById(R.id.clearGridButton);
                     Button genPasswordButton = (Button) rootView.findViewById(R.id.genPasswordButton);
-                    initializeSpinnerAdapter(rootView);
+                    loadSitesFromPrefs(rootView);
                     siteSpinner.setAdapter(spinnerAdapter);
 
                     loadSitesFromPrefs(rootView);
