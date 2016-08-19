@@ -247,6 +247,24 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
 
+                    siteSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                            if (siteSpinner.getSelectedItemPosition() <= 0){
+                                return;
+                            }
+
+                            if (gv.isUserShapeValid()){
+                                gv.GeneratePassword();
+                            }
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parentView) {
+                            // your code here
+                        }
+
+                    });
 
                     showPwdCheckBox.setOnClickListener(new View.OnClickListener() {
                         @Override
