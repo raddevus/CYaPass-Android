@@ -4,9 +4,13 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
 import android.support.v4.app.Fragment;
@@ -54,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
 
+    private static Context appContext;
     private static TextView passwordText;
     private static String password;
     public static Spinner siteSpinner;
@@ -71,8 +76,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
+        MainActivity.appContext = getApplicationContext();
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -84,15 +88,70 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-/*        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                //addNewSite(R.id.siteText);
+                clearAllUserPrefs(view);
             }
-        }); */
+        });
 
+
+
+    }
+
+    private void addNewSite(int id){
+
+        LayoutInflater li = LayoutInflater.from(getBaseContext());
+        final View v = li.inflate(R.layout.sitelist_main, null);
+
+        AlertDialog.Builder builder =
+                new AlertDialog.Builder(v.getContext());
+
+        builder.setMessage( "Add new site").setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        SharedPreferences sites = MainActivity.appContext.getSharedPreferences("sites", MODE_PRIVATE);
+                        String outValues = sites.getString("sites", "");
+                        Log.d("MainActivity", sites.getString("sites", ""));
+                        SharedPreferences.Editor edit = sites.edit();
+
+                        //edit.clear();
+
+                        EditText input = (EditText) v.findViewById(R.id.siteText);
+                        String currentValue = input.getText().toString();
+                        if (currentValue != "") {
+                            if (outValues != "") {
+                                outValues += "," + currentValue;
+                            } else {
+                                outValues += currentValue;
+                            }
+                        }
+                        edit.putString("sites", outValues);
+                        edit.commit();
+                        Log.d("MainActivity", "final outValues : " + outValues);
+                        PlaceholderFragment.loadSitesFromPrefs(v);
+                    }
+                })
+                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.setView(v);
+        alert.show();
+    }
+
+    private void clearAllUserPrefs(View v){
+        SharedPreferences sites = getApplicationContext().getSharedPreferences("sites", MODE_PRIVATE);
+        SharedPreferences.Editor edit = sites.edit();
+        edit.clear();
+        edit.commit();
+        //PlaceholderFragment.loadSitesFromPrefs(v);
     }
 
     public  void DiscoverAvailableDevices(final ArrayAdapter<String>adapter, final ArrayAdapter<BluetoothDevice>otherDevices){
@@ -146,6 +205,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -161,6 +221,9 @@ public class MainActivity extends AppCompatActivity {
         private ConnectThread ct;
         private Set<BluetoothDevice> pairedDevices;
         private static String password;
+        private static ArrayList<SiteInfo> spinnerItems = new ArrayList<SiteInfo>();
+        private static ArrayAdapter<SiteInfo> spinnerAdapter;
+
 
         public PlaceholderFragment() {
         }
@@ -201,6 +264,25 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+        public static void loadSitesFromPrefs(View vx){
+            Log.d("MainActivity", "Loading sites from preferences");
+
+            SharedPreferences sitePrefs = MainActivity.appContext.getSharedPreferences("sites", MODE_PRIVATE);
+            initializeSpinnerAdapter(vx);
+            String sites = sitePrefs.getString("sites", "");
+
+            String[] allSites = sites.split(",");
+            for (String s : allSites){
+                spinnerAdapter.add(new SiteInfo(s));
+            }
+        }
+
+        private static void initializeSpinnerAdapter(View v){
+            spinnerAdapter = new ArrayAdapter<SiteInfo>(v.getContext(), android.R.layout.simple_list_item_1, spinnerItems);
+            spinnerAdapter.add(new SiteInfo ("select site"));
+            spinnerAdapter.notifyDataSetChanged();
+        }
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -214,22 +296,20 @@ public class MainActivity extends AppCompatActivity {
             switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
                 case 1: {
 
-
-
                     passwordText = (TextView) rootView.findViewById(R.id.password);
                     siteSpinner = (Spinner)rootView.findViewById(R.id.siteSpinner);
                     final CheckBox showPwdCheckBox = (CheckBox)rootView.findViewById(R.id.showPwd);
                     showPwdCheckBox.setChecked(true);
                     final Button clearGridButton = (Button) rootView.findViewById(R.id.clearGridButton);
                     Button genPasswordButton = (Button) rootView.findViewById(R.id.genPasswordButton);
-
-                    ArrayList<SiteInfo> spinnerItems = new ArrayList<SiteInfo>();
-                    final ArrayAdapter<SiteInfo> spinnerAdapter = new ArrayAdapter<SiteInfo>(getContext(), android.R.layout.simple_list_item_1, spinnerItems);
+                    initializeSpinnerAdapter(rootView);
                     siteSpinner.setAdapter(spinnerAdapter);
-                    spinnerAdapter.add(new SiteInfo ("select site"));
-                    spinnerAdapter.add(new SiteInfo("amazon"));
-                    spinnerAdapter.add(new SiteInfo("computer"));
-                    spinnerAdapter.notifyDataSetChanged();
+
+                    loadSitesFromPrefs(rootView);
+
+                    //spinnerAdapter.add(new SiteInfo("amazon"));
+                    //spinnerAdapter.add(new SiteInfo("computer"));
+
                     genPasswordButton.requestFocus();
 
                     clearGridButton.setOnClickListener(new View.OnClickListener() {
