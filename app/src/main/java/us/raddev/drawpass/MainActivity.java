@@ -211,12 +211,17 @@ public class MainActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = null;
+            //final GridView gv = new us.raddev.drawpass.GridView(rootView.getContext());
+            final GridView gv = new us.raddev.drawpass.GridView(getContext());
+            rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            LinearLayout mainlayout1 = (LinearLayout) rootView.findViewById(R.id.drawcross);
+            mainlayout1.addView(gv,gv.cellSize*7,gv.cellSize*7);
+
             switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
                 case 1: {
-                    rootView = inflater.inflate(R.layout.fragment_main, container, false);
-                    final GridView gv = new us.raddev.drawpass.GridView(rootView.getContext());
-                    LinearLayout mainlayout1 = (LinearLayout) rootView.findViewById(R.id.drawcross);
-                    mainlayout1.addView(gv,gv.cellSize*7,gv.cellSize*7);
+
+
+
                     passwordText = (TextView) rootView.findViewById(R.id.password);
                     siteSpinner = (Spinner)rootView.findViewById(R.id.siteSpinner);
                     final CheckBox showPwdCheckBox = (CheckBox)rootView.findViewById(R.id.showPwd);
@@ -267,16 +272,12 @@ public class MainActivity extends AppCompatActivity {
                             if (MainActivity.siteSpinner.getSelectedItemPosition() <= 0){
                                 return; // add message box need to select a valid site
                             }
-                            if (gv.userShape != null){
-                                if (gv.userShape.size() <= 0){
-                                    return; // add message box to warn user
-                                }
+                            if (gv.isUserShapeValid()){
+                                gv.GeneratePassword();
                             }
                             else{
-                                return; // no points, it's null
+                                // display message to user
                             }
-
-                            gv.GeneratePassword();
                         }
                     });
                     break;
@@ -346,6 +347,11 @@ public class MainActivity extends AppCompatActivity {
                             else{
                                 MainActivity.isAddUppercase = false;
                             }
+
+                            if (gv.isUserShapeValid()){
+                                Log.d("MainActivity", "add uppercase -- Re-generating password...");
+                                gv.GeneratePassword();
+                            }
                         }
                     });
 
@@ -358,6 +364,11 @@ public class MainActivity extends AppCompatActivity {
                             else{
                                 MainActivity.isAddSpecialChars = false;
                             }
+
+                            if (gv.isUserShapeValid()){
+                                Log.d("MainActivity", "addChars -- Re-generating password...");
+                                gv.GeneratePassword();
+                            }
                         }
                     });
 
@@ -369,6 +380,11 @@ public class MainActivity extends AppCompatActivity {
                             }
                             else{
                                 MainActivity.isMaxLength = false;
+                            }
+
+                            if (gv.isUserShapeValid()){
+                                Log.d("MainActivity", "set maxLength -- Re-generating password...");
+                                gv.GeneratePassword();
                             }
                         }
                     });

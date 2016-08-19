@@ -34,9 +34,9 @@ public class GridView extends View {
     private int postWidth;
     private int leftOffset;
     private int topOffset = 20;
-    public List<Point> userShape = new ArrayList<Point>();
+    private List<Point> userShape = new ArrayList<Point>();
     private Point previousPoint;
-    private LineSegments LineSegments = new LineSegments();
+    private static LineSegments LineSegments = new LineSegments();
     private Canvas xCanvas;
     public int viewWidth;
     public int viewHeight;
@@ -111,7 +111,22 @@ public class GridView extends View {
 
     public void ClearGrid(){
         userShape = new ArrayList<Point>();
+        //userShape.removeAll(userShape);
         LineSegments = new LineSegments();
+    }
+
+    public boolean isUserShapeValid(){
+        //determines whether or not the userShape has at least x points in it
+        // this is an arbitrary definition of it being a valid shape based upon size
+        Log.d("MainActivity", "isUserShapeValid()");
+        Log.d("MainActivity", userShape.toString());
+        if (LineSegments == null){
+            return false;
+        }
+        if (LineSegments.size() >= 1){ // we consider 2 points a valid shape (a single line)
+            return true;
+        }
+        return false;
     }
 
     private void DrawUserShapes(Canvas canvas){
@@ -261,6 +276,7 @@ public class GridView extends View {
     private void CreateHash(){
         //String site = MainActivity.siteKey.getText().toString();  //"amazon";
         String site = MainActivity.siteSpinner.getSelectedItem().toString();
+        Log.d("MainActivity", "site: " + site);
         String text = LineSegments.PostValue + site;
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
