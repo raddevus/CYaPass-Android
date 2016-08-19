@@ -3,6 +3,7 @@ package us.raddev.drawpass;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -261,6 +262,17 @@ public class MainActivity extends AppCompatActivity {
             //android.content.ClipData clip = android.content.ClipData.newPlainText("", "");
             android.content.ClipData clip = android.content.ClipData.newPlainText(null,null);
             clipboard.setPrimaryClip(clip);
+
+        }
+
+        private String readClipboard() {
+            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            android.content.ClipData clip = clipboard.getPrimaryClip();
+            if (clip != null && clip.getItemCount() > 0) {
+                ClipData.Item item = clip.getItemAt(clip.getItemCount() - 1);
+                return item.getText().toString();
+            }
+            return "";
 
         }
 
@@ -549,7 +561,14 @@ public class MainActivity extends AppCompatActivity {
                     sendButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            ct.writeMessage(outText.getText().toString());
+                            String clipText = readClipboard();
+                            Log.d("MainActivity", "on clipboard : " + clipText);
+                            if (clipText != ""){
+                                ct.writeMessage(clipText);
+                            }
+                            else {
+                                ct.writeMessage(outText.getText().toString());
+                            }
                         }
                     });
 
