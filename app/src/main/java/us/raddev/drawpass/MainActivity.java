@@ -226,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
                     ArrayList<SiteInfo> spinnerItems = new ArrayList<SiteInfo>();
                     final ArrayAdapter<SiteInfo> spinnerAdapter = new ArrayAdapter<SiteInfo>(getContext(), android.R.layout.simple_list_item_1, spinnerItems);
                     siteSpinner.setAdapter(spinnerAdapter);
-                    spinnerAdapter.add(new SiteInfo ("[--choose site--]"));
+                    spinnerAdapter.add(new SiteInfo ("select site"));
                     spinnerAdapter.add(new SiteInfo("amazon"));
                     spinnerAdapter.add(new SiteInfo("computer"));
                     spinnerAdapter.notifyDataSetChanged();
