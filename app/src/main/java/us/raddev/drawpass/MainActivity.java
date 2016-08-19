@@ -6,13 +6,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
-import android.provider.CalendarContract;
 import android.support.design.widget.TabLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -20,7 +15,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.Layout;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -251,10 +245,12 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                             if (siteSpinner.getSelectedItemPosition() <= 0){
+                                passwordText.setText("");
+                                clearClipboard();
                                 return;
                             }
 
-                            if (gv.isUserShapeValid()){
+                            if (gv.isLineSegmentComplete()){
                                 gv.GeneratePassword();
                             }
                         }
@@ -290,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
                             if (MainActivity.siteSpinner.getSelectedItemPosition() <= 0){
                                 return; // add message box need to select a valid site
                             }
-                            if (gv.isUserShapeValid()){
+                            if (gv.isLineSegmentComplete()){
                                 gv.GeneratePassword();
                             }
                             else{
@@ -366,7 +362,7 @@ public class MainActivity extends AppCompatActivity {
                                 MainActivity.isAddUppercase = false;
                             }
 
-                            if (gv.isUserShapeValid()){
+                            if (gv.isLineSegmentComplete()){
                                 Log.d("MainActivity", "add uppercase -- Re-generating password...");
                                 gv.GeneratePassword();
                             }
@@ -383,7 +379,7 @@ public class MainActivity extends AppCompatActivity {
                                 MainActivity.isAddSpecialChars = false;
                             }
 
-                            if (gv.isUserShapeValid()){
+                            if (gv.isLineSegmentComplete()){
                                 Log.d("MainActivity", "addChars -- Re-generating password...");
                                 gv.GeneratePassword();
                             }
@@ -400,7 +396,7 @@ public class MainActivity extends AppCompatActivity {
                                 MainActivity.isMaxLength = false;
                             }
 
-                            if (gv.isUserShapeValid()){
+                            if (gv.isLineSegmentComplete()){
                                 Log.d("MainActivity", "set maxLength -- Re-generating password...");
                                 gv.GeneratePassword();
                             }

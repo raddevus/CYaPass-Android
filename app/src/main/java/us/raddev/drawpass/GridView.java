@@ -115,10 +115,10 @@ public class GridView extends View {
         LineSegments = new LineSegments();
     }
 
-    public boolean isUserShapeValid(){
+    public boolean isLineSegmentComplete(){
         //determines whether or not the userShape has at least x points in it
         // this is an arbitrary definition of it being a valid shape based upon size
-        Log.d("MainActivity", "isUserShapeValid()");
+        Log.d("MainActivity", "isLineSegmentComplete()");
         Log.d("MainActivity", userShape.toString());
         if (LineSegments == null){
             return false;
@@ -275,6 +275,9 @@ public class GridView extends View {
     //@TargetApi(19)
     private void CreateHash(){
         //String site = MainActivity.siteKey.getText().toString();  //"amazon";
+        if (MainActivity.siteSpinner.getSelectedItemPosition() <= 0){
+            return;
+        }
         String site = MainActivity.siteSpinner.getSelectedItem().toString();
         Log.d("MainActivity", "site: " + site);
         String text = LineSegments.PostValue + site;
