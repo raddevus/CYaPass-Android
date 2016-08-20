@@ -33,6 +33,7 @@ public class GridView extends View {
     private int centerPoint;;
     private int postWidth;
     private int leftOffset;
+    private int highlightOffset;
     private int topOffset = 20;
     private List<Point> userShape = new ArrayList<Point>();
     private Point previousPoint;
@@ -63,6 +64,7 @@ public class GridView extends View {
         Log.d("MainActivity", "id: " + String.valueOf(vx.getId()));
         //postWidth = ((viewWidth / 2) / 6) /5;
         postWidth = (int)viewWidth / 58;
+        highlightOffset = postWidth + 10;
         cellSize = centerPoint = (int)viewWidth /7;
         leftOffset = viewWidth - ((numOfCells + 1)* cellSize); //(viewWidth / densityDPI) * 6;
 
@@ -140,7 +142,7 @@ public class GridView extends View {
         for (int j=0;j < LineSegments.size();j++) {
             canvas.drawCircle((float) LineSegments.get(j).Start.x,
                     (float) LineSegments.get(j).Start.y,
-                    30, paint);
+                     highlightOffset, paint);
             canvas.drawLine(LineSegments.get(j).Start.x, LineSegments.get(j).Start.y,
                     LineSegments.get(j).End.x,
                     LineSegments.get(j).End.y, paint);
@@ -276,9 +278,11 @@ public class GridView extends View {
     private void CreateHash(){
         //String site = MainActivity.siteKey.getText().toString();  //"amazon";
         if (MainActivity.siteSpinner.getSelectedItemPosition() <= 0){
+            MainActivity.SetPassword("");
             return;
         }
         if (!isLineSegmentComplete()){
+            MainActivity.SetPassword("");
             return;
         }
         String site = MainActivity.siteSpinner.getSelectedItem().toString();

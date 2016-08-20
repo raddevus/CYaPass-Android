@@ -337,6 +337,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View view) {
                             gv.ClearGrid();
+                            password = "";
                             passwordText.setText("");
                             clearClipboard();
                             gv.invalidate();
@@ -348,6 +349,7 @@ public class MainActivity extends AppCompatActivity {
                         public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                             if (siteSpinner.getSelectedItemPosition() <= 0){
                                 passwordText.setText("");
+                                password = "";
                                 clearClipboard();
                                 return;
                             }
