@@ -35,7 +35,7 @@ public class GridView extends View {
     private int leftOffset;
     private int highlightOffset;
     private int topOffset = 20;
-    private List<Point> userShape = new ArrayList<Point>();
+    private static List<Point> userShape = new ArrayList<Point>();
     private Point previousPoint;
     private static LineSegments LineSegments = new LineSegments();
     private Canvas xCanvas;
@@ -112,8 +112,10 @@ public class GridView extends View {
     }
 
     public void ClearGrid(){
+        userShape.clear();
         userShape = new ArrayList<Point>();
         //userShape.removeAll(userShape);
+        LineSegments.clear();
         LineSegments = new LineSegments();
     }
 

@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
-
+    static GridView gv;
     private static Context appContext;
     private static TextView passwordText;
     private static String password;
@@ -71,6 +71,24 @@ public class MainActivity extends AppCompatActivity {
     static int maxLength = 25;
 
     private LinearLayout layout1;
+
+    private void clearClipboard(){
+        android.content.ClipboardManager clipboard = (android.content.ClipboardManager) appContext.getSystemService(Context.CLIPBOARD_SERVICE);
+        //android.content.ClipData clip = android.content.ClipData.newPlainText("", "");
+        android.content.ClipData clip = android.content.ClipData.newPlainText(null,null);
+        clipboard.setPrimaryClip(clip);
+
+    }
+
+    public void clearGrid(){
+        gv.ClearGrid();
+        password = "";
+        passwordText.setText("");
+        clearClipboard();
+        gv.invalidate();
+    }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +111,8 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addNewSite(R.id.siteText);
+                //addNewSite(R.id.siteText);
+                clearGrid();
                 //clearAllUserPrefs(view);
             }
         });
@@ -102,53 +121,26 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void addNewSite(int id){
+    public static void addUserPrefValue(String currentValue){
+        SharedPreferences sites = MainActivity.appContext.getSharedPreferences("sites", MODE_PRIVATE);
+        String outValues = sites.getString("sites", "");
+        Log.d("MainActivity", sites.getString("sites", ""));
+        SharedPreferences.Editor edit = sites.edit();
 
-        LayoutInflater li = LayoutInflater.from(getBaseContext());
-        final View v = li.inflate(R.layout.sitelist_main, null);
+        if (outValues != "") {
+            outValues += "," + currentValue;
+        } else {
+            outValues += currentValue;
 
-        AlertDialog.Builder builder =
-                new AlertDialog.Builder(v.getContext());
+        }
+        edit.putString("sites", outValues);
+        edit.commit();
+        Log.d("MainActivity", "final outValues : " + outValues);
 
-        builder.setMessage( "Add new site").setCancelable(false)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        SharedPreferences sites = MainActivity.appContext.getSharedPreferences("sites", MODE_PRIVATE);
-                        String outValues = sites.getString("sites", "");
-                        Log.d("MainActivity", sites.getString("sites", ""));
-                        SharedPreferences.Editor edit = sites.edit();
-
-                        //edit.clear();
-
-                        EditText input = (EditText) v.findViewById(R.id.siteText);
-                        String currentValue = input.getText().toString();
-                        if (currentValue != "") {
-                            if (outValues != "") {
-                                outValues += "," + currentValue;
-                            } else {
-                                outValues += currentValue;
-                            }
-                        }
-                        edit.putString("sites", outValues);
-                        edit.commit();
-                        Log.d("MainActivity", "final outValues : " + outValues);
-                        PlaceholderFragment.loadSitesFromPrefs(v);
-                    }
-                })
-                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-
-                    }
-                });
-        AlertDialog alert = builder.create();
-        alert.setView(v);
-        alert.show();
     }
 
-    private void clearAllUserPrefs(View v){
-        SharedPreferences sites = getApplicationContext().getSharedPreferences("sites", MODE_PRIVATE);
+    public static void clearAllUserPrefs(){
+        SharedPreferences sites = appContext.getSharedPreferences("sites", MODE_PRIVATE);
         SharedPreferences.Editor edit = sites.edit();
         edit.clear();
         edit.commit();
@@ -304,12 +296,66 @@ public class MainActivity extends AppCompatActivity {
             spinnerAdapter.notifyDataSetChanged();
         }
 
+        public void clearGrid(){
+            gv.ClearGrid();
+            password = "";
+            passwordText.setText("");
+            clearClipboard();
+            gv.invalidate();
+        }
+
+        private void addNewSite(int id){
+
+            LayoutInflater li = LayoutInflater.from(getContext());
+            final View v = li.inflate(R.layout.sitelist_main, null);
+
+            AlertDialog.Builder builder =
+                    new AlertDialog.Builder(v.getContext());
+
+            builder.setMessage( "Add new site").setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            SharedPreferences sites = MainActivity.appContext.getSharedPreferences("sites", MODE_PRIVATE);
+                            String outValues = sites.getString("sites", "");
+                            Log.d("MainActivity", sites.getString("sites", ""));
+                            SharedPreferences.Editor edit = sites.edit();
+
+                            //edit.clear();
+
+                            EditText input = (EditText) v.findViewById(R.id.siteText);
+                            String currentValue = input.getText().toString();
+                            if (currentValue != "") {
+                                if (outValues != "") {
+                                    outValues += "," + currentValue;
+                                } else {
+                                    outValues += currentValue;
+                                }
+                            }
+                            edit.putString("sites", outValues);
+                            edit.commit();
+                            Log.d("MainActivity", "final outValues : " + outValues);
+                            PlaceholderFragment.loadSitesFromPrefs(v);
+                            siteSpinner.setSelection(siteSpinner.getCount()-1, true);
+                        }
+                    })
+                    .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.setView(v);
+            alert.show();
+        }
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = null;
             //final GridView gv = new us.raddev.drawpass.GridView(rootView.getContext());
-            final GridView gv = new us.raddev.drawpass.GridView(getContext());
+            gv = new us.raddev.drawpass.GridView(getContext());
             rootView = inflater.inflate(R.layout.fragment_main, container, false);
             LinearLayout mainlayout1 = (LinearLayout) rootView.findViewById(R.id.drawcross);
             mainlayout1.addView(gv,gv.cellSize*7,gv.cellSize*7);
@@ -321,28 +367,15 @@ public class MainActivity extends AppCompatActivity {
                     siteSpinner = (Spinner)rootView.findViewById(R.id.siteSpinner);
                     final CheckBox showPwdCheckBox = (CheckBox)rootView.findViewById(R.id.showPwd);
                     showPwdCheckBox.setChecked(true);
-                    final Button clearGridButton = (Button) rootView.findViewById(R.id.clearGridButton);
+
                     Button deleteSiteButton = (Button) rootView.findViewById(R.id.deleteSite);
+                    Button addSiteButton = (Button) rootView.findViewById(R.id.addSite);
                     loadSitesFromPrefs(rootView);
                     siteSpinner.setAdapter(spinnerAdapter);
 
                     loadSitesFromPrefs(rootView);
 
-                    //spinnerAdapter.add(new SiteInfo("amazon"));
-                    //spinnerAdapter.add(new SiteInfo("computer"));
-
-                    deleteSiteButton.requestFocus();
-
-                    clearGridButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            gv.ClearGrid();
-                            password = "";
-                            passwordText.setText("");
-                            clearClipboard();
-                            gv.invalidate();
-                        }
-                    });
+                    addSiteButton.requestFocus();
 
                     siteSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                         @Override
@@ -384,13 +417,49 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
 
+                    addSiteButton.setOnClickListener(new View.OnClickListener() {
+                         @Override
+                         public void onClick(View view) {
+                            addNewSite(R.id.siteText);
+                         }
+                     });
+
                     deleteSiteButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             if (MainActivity.siteSpinner.getSelectedItemPosition() <= 0){
                                 return; // add message box need to select a valid site
                             }
-                            // write delete site code here
+                            else
+                            {
+                                new AlertDialog.Builder(view.getContext())
+                                        .setTitle("Delete site?")
+                                        .setMessage("Are you sure you want to delete this site?")
+                                        .setPositiveButton(R.string.yes_button, new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                spinnerItems.remove(siteSpinner.getSelectedItemPosition());
+                                                spinnerAdapter.notifyDataSetChanged();
+                                                MainActivity.clearAllUserPrefs();
+                                                int siteCounter = 0;
+                                                for (SiteInfo s : spinnerItems){
+                                                    // siteCounter insures we do not add the empty
+                                                    // site item to the user prefs
+                                                    if (siteCounter > 0) {
+                                                        MainActivity.addUserPrefValue(s.toString());
+                                                    }
+                                                    siteCounter++;
+                                                }
+                                                siteSpinner.setSelection(0,true);
+                                            }
+                                        })
+                                        .setNegativeButton(R.string.no_button, new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                // do nothing
+                                            }
+                                        })
+                                        .setIcon(android.R.drawable.ic_dialog_alert)
+                                        .show();
+                            }
                         }
                     });
                     break;
