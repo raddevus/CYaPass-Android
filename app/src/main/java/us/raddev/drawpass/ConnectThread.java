@@ -28,9 +28,11 @@ public class ConnectThread extends Thread {
 
         BluetoothSocket tmp = null;
         mmDevice = device;
-        this.logViewAdapter = logViewAdapter;
-        logViewAdapter.add("in ConnectThread()...");
-        logViewAdapter.notifyDataSetChanged();
+        if (logViewAdapter != null) {
+            this.logViewAdapter = logViewAdapter;
+            logViewAdapter.add("in ConnectThread()...");
+            logViewAdapter.notifyDataSetChanged();
+        }
         OutputStream tmpOut;
         InputStream tmpIn;
 
@@ -78,8 +80,10 @@ public class ConnectThread extends Thread {
             byte [] outByte = new byte[]{121};
 
             mmOutStream.write(outByte);
-            logViewAdapter.add("Success; Wrote YES!");
-            logViewAdapter.notifyDataSetChanged();
+            if (logViewAdapter != null) {
+                logViewAdapter.add("Success; Wrote YES!");
+                logViewAdapter.notifyDataSetChanged();
+            }
 
         } catch (IOException e) { }
     }
@@ -88,11 +92,27 @@ public class ConnectThread extends Thread {
         try {
             byte [] outByte = new byte[]{110};
             mmOutStream.write(outByte);
-            logViewAdapter.add("Success; Wrote NO");
-            logViewAdapter.notifyDataSetChanged();
+            if (logViewAdapter != null) {
+                logViewAdapter.add("Success; Wrote NO");
+                logViewAdapter.notifyDataSetChanged();
+            }
 
             mmOutStream.write(outByte);
         } catch (IOException e) { }
+    }
+
+    public void writeStartByte(){
+        try {
+            byte[] outByte = new byte[]{38};
+            mmOutStream.write(outByte);
+            if (logViewAdapter != null) {
+                logViewAdapter.add("Success; Wrote &");
+                logViewAdapter.notifyDataSetChanged();
+            }
+
+            mmOutStream.write(outByte);
+        }
+        catch (IOException e) { }
     }
 
     public void writeMessage(String message) {
@@ -101,7 +121,9 @@ public class ConnectThread extends Thread {
             outByte = message.getBytes();
             mmOutStream.write(outByte);
             //logViewAdapter.add("Success; Wrote YES!");
-            logViewAdapter.notifyDataSetChanged();
+            if (logViewAdapter != null) {
+                logViewAdapter.notifyDataSetChanged();
+            }
 
         } catch (IOException e) { }
     }
@@ -114,22 +136,30 @@ public class ConnectThread extends Thread {
             // Connect the device through the socket. This will block
             // until it succeeds or throws an exception
             Log.d("MainActivity", "Connecting...");
-            logViewAdapter.add("Connecting...");
-            logViewAdapter.notifyDataSetChanged();
+            if (logViewAdapter != null) {
+                logViewAdapter.add("Connecting...");
+                logViewAdapter.notifyDataSetChanged();
+            }
             mmSocket.connect();
             Log.d("MainActivity", "Connected");
-            logViewAdapter.add("Connected");
-            logViewAdapter.notifyDataSetChanged();
-            if (mmOutStream != null) {
-                mmOutStream.write(new byte[]{65, 66});
-                logViewAdapter.add("Success; Wrote 2 bytes!");
+            if (logViewAdapter != null) {
+                logViewAdapter.add("Connected");
                 logViewAdapter.notifyDataSetChanged();
+            }
+            if (mmOutStream != null) {
+                if (logViewAdapter != null) {
+                    mmOutStream.write(new byte[]{65, 66});
+                    logViewAdapter.add("Success; Wrote 2 bytes!");
+                    logViewAdapter.notifyDataSetChanged();
+                }
             }
         } catch (IOException connectException) {
             // Unable to connect; close the socket and get out
             Log.d("MainActivity", "Failed! : " + connectException.getMessage());
-            logViewAdapter.add("Failed! : " + connectException.getMessage());
-            logViewAdapter.notifyDataSetChanged();
+            if (logViewAdapter != null) {
+                logViewAdapter.add("Failed! : " + connectException.getMessage());
+                logViewAdapter.notifyDataSetChanged();
+            }
             try {
                 mmSocket.close();
             } catch (IOException closeException) { }
@@ -143,19 +173,25 @@ public class ConnectThread extends Thread {
     public void run() {
         byte[] buffer = new byte[1024];  // buffer store for the stream
         int bytes; // bytes returned from read()
-        logViewAdapter.add("Reading from BT!...");
-        logViewAdapter.notifyDataSetChanged();
+        if (logViewAdapter != null) {
+            logViewAdapter.add("Reading from BT!...");
+            logViewAdapter.notifyDataSetChanged();
+        }
         // Keep listening to the InputStream until an exception occurs
         while (true) {
             try {
                 // Read from the InputStream
                 bytes = mmInStream.read(buffer);
                 // Send the obtained bytes to the UI activity
-                logViewAdapter.add(String.valueOf(bytes));
-                logViewAdapter.notifyDataSetChanged();
+                if (logViewAdapter != null) {
+                    logViewAdapter.add(String.valueOf(bytes));
+                    logViewAdapter.notifyDataSetChanged();
+                }
             } catch (IOException e) {
-                logViewAdapter.add("IOException on read: " + e.getMessage());
-                logViewAdapter.notifyDataSetChanged();
+                if (logViewAdapter != null) {
+                    logViewAdapter.add("IOException on read: " + e.getMessage());
+                    logViewAdapter.notifyDataSetChanged();
+                }
             }
         }
     }

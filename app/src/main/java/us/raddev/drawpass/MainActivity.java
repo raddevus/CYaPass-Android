@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
+import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AlertDialog;
@@ -60,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
-    static GridView gv;
+
     private static Context appContext;
     private static TextView passwordText;
     private static String password;
@@ -82,11 +83,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private  void clearGrid(View v){
-        gv.ClearGrid();
+    private  void clearGrid(){
+//        gv.ClearGrid();
         password = "";
         passwordText.setText("");
-        v.getRootView().invalidate();
+
         //v.setWillNotDraw(false);
         //v.invalidate();
     }
@@ -114,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                clearGrid(view);
+                clearGrid();
                 clearClipboard();
             }
         });
@@ -408,14 +409,20 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+
+
             View rootView = null;
             //final GridView gv = new us.raddev.drawpass.GridView(rootView.getContext());
-            gv = new us.raddev.drawpass.GridView(getContext());
+            final GridView gv = new us.raddev.drawpass.GridView(appContext);
+            /*if (Build.VERSION.SDK_INT >= 11) {
+                gv.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+            }*/
             rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            rootView.setWillNotDraw(false);
+
+            //rootView.setWillNotDraw(false);
             LinearLayout mainlayout1 = (LinearLayout) rootView.findViewById(R.id.drawcross);
             mainlayout1.addView(gv,gv.cellSize*7,gv.cellSize*7);
-            container.setWillNotDraw(false);
+            //container.setWillNotDraw(false);
 
             Button clearGridButton;
 
@@ -486,7 +493,7 @@ public class MainActivity extends AppCompatActivity {
                             gv.invalidate();
                             password = "";
                             passwordText.setText("");
-                            view.getRootView().invalidate();
+
 
                         }
                     });

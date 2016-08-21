@@ -10,6 +10,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.os.Build;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -46,10 +47,14 @@ public class GridView extends View {
     int numOfCells = 5;
     public int cellSize; //125
     private Context _context;
+    public View vx;
 
     public GridView(Context context) {
         super(context);
         _context = context;
+/*        if (Build.VERSION.SDK_INT >= 11) {
+            setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        } */
         float density = getResources().getDisplayMetrics().density;
         Log.d("MainActivity", "density : " + String.valueOf(density));
         int densityDPI = getResources().getDisplayMetrics().densityDpi;
@@ -59,7 +64,7 @@ public class GridView extends View {
         viewHeight = getResources().getDisplayMetrics().heightPixels;
         Log.d("MainActivity", "viewHeight : " + String.valueOf(viewHeight));
 
-        View vx = this.getRootView();
+        vx = this.getRootView();
 
         Log.d("MainActivity", "id: " + String.valueOf(vx.getId()));
         //postWidth = ((viewWidth / 2) / 6) /5;
@@ -117,6 +122,9 @@ public class GridView extends View {
         //userShape.removeAll(userShape);
         LineSegments.clear();
         LineSegments = new LineSegments();
+        invalidate();
+        vx.invalidate();
+
     }
 
     public boolean isLineSegmentComplete(){
