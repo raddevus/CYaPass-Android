@@ -647,6 +647,9 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void afterTextChanged(Editable s) {
                             MainActivity.specialChars = s.toString();
+                            if (MainActivity.isAddSpecialChars){
+                                gv.GeneratePassword();
+                            }
                         }
 
                         @Override

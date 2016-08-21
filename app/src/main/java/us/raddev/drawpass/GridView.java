@@ -299,7 +299,10 @@ public class GridView extends View {
                 sb.append(String.format("%02x", b));
             }
             if (MainActivity.isAddSpecialChars){
-                sb.insert(2,MainActivity.specialChars);
+                if (MainActivity.specialChars != null && MainActivity.specialChars != "")
+                {
+                    sb.insert(2, MainActivity.specialChars);
+                }
             }
             if (MainActivity.isAddUppercase){
                 Log.d("MainActivity", "calling addUpperCase()");
