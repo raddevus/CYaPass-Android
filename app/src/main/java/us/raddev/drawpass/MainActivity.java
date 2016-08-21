@@ -86,8 +86,9 @@ public class MainActivity extends AppCompatActivity {
         gv.ClearGrid();
         password = "";
         passwordText.setText("");
-        v.setWillNotDraw(false);
-        v.invalidate();
+        v.getRootView().invalidate();
+        //v.setWillNotDraw(false);
+        //v.invalidate();
     }
 
 
@@ -158,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
         String clipText = readClipboard();
         Log.d("MainActivity", "on clipboard : " + clipText);
         if (clipText != ""){
-            ct.writeMessage(clipText +"\n");
+            ct.writeMessage(clipText);
             ct.cancel();
         }
 
@@ -416,6 +417,9 @@ public class MainActivity extends AppCompatActivity {
             mainlayout1.addView(gv,gv.cellSize*7,gv.cellSize*7);
             container.setWillNotDraw(false);
 
+            Button clearGridButton;
+
+
             switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
                 case 1: {
 
@@ -423,7 +427,7 @@ public class MainActivity extends AppCompatActivity {
                     siteSpinner = (Spinner)rootView.findViewById(R.id.siteSpinner);
                     final CheckBox showPwdCheckBox = (CheckBox)rootView.findViewById(R.id.showPwd);
                     showPwdCheckBox.setChecked(true);
-
+                    clearGridButton = (Button)rootView.findViewById(R.id.clearGrid);
                     Button deleteSiteButton = (Button) rootView.findViewById(R.id.deleteSite);
                     Button addSiteButton = (Button) rootView.findViewById(R.id.addSite);
                     loadSitesFromPrefs(rootView);
@@ -470,6 +474,20 @@ public class MainActivity extends AppCompatActivity {
                                 passwordText.setVisibility(View.INVISIBLE);
                                 isPwdVisible = false;
                             }
+                        }
+                    });
+
+                    clearGridButton.setOnClickListener(new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View view) {
+
+                            gv.ClearGrid();
+                            gv.invalidate();
+                            password = "";
+                            passwordText.setText("");
+                            view.getRootView().invalidate();
+
                         }
                     });
 
@@ -537,6 +555,7 @@ public class MainActivity extends AppCompatActivity {
                     Button yesButton;
                     Button noButton;
                     Button sendButton;
+
                     final CheckBox addUpperCaseCheckBox;
                     final CheckBox addCharsCheckBox;
                     final CheckBox maxLengthCheckBox;
@@ -549,6 +568,7 @@ public class MainActivity extends AppCompatActivity {
                     yesButton = (Button)rootView.findViewById(R.id.YesButton);
                     noButton = (Button)rootView.findViewById(R.id.NoButton);
                     sendButton = (Button)rootView.findViewById(R.id.sendButton);
+
                     outText = (EditText)rootView.findViewById(R.id.outText);
                     addUpperCaseCheckBox = (CheckBox)rootView.findViewById(R.id.addUCaseCheckBox);
                     addCharsCheckBox = (CheckBox)rootView.findViewById(R.id.addCharsCheckBox);
@@ -693,7 +713,7 @@ public class MainActivity extends AppCompatActivity {
                         public void onClick(View view) {
                             String clipText = readClipboard();
                             Log.d("MainActivity", "on clipboard : " + clipText);
-                            if (clipText != ""){
+                            if (outText.getText().toString() == ""){
                                 ct.writeMessage(clipText);
                             }
                             else {
