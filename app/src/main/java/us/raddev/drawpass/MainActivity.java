@@ -83,17 +83,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private  void clearGrid(){
-//        gv.ClearGrid();
-        password = "";
-        passwordText.setText("");
-
-        //v.setWillNotDraw(false);
-        //v.invalidate();
-    }
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,15 +99,6 @@ public class MainActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                clearGrid();
-                clearClipboard();
-            }
-        });
 
         FloatingActionButton sendFab = (FloatingActionButton)findViewById(R.id.sendFab);
         sendFab.setOnClickListener(new View.OnClickListener() {
@@ -414,9 +394,7 @@ public class MainActivity extends AppCompatActivity {
             View rootView = null;
             //final GridView gv = new us.raddev.drawpass.GridView(rootView.getContext());
             final GridView gv = new us.raddev.drawpass.GridView(appContext);
-            /*if (Build.VERSION.SDK_INT >= 11) {
-                gv.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-            }*/
+
             rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
             //rootView.setWillNotDraw(false);
@@ -425,7 +403,6 @@ public class MainActivity extends AppCompatActivity {
             //container.setWillNotDraw(false);
 
             Button clearGridButton;
-
 
             switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
                 case 1: {
@@ -493,8 +470,7 @@ public class MainActivity extends AppCompatActivity {
                             gv.invalidate();
                             password = "";
                             passwordText.setText("");
-
-
+                            clearClipboard();
                         }
                     });
 
@@ -698,7 +674,11 @@ public class MainActivity extends AppCompatActivity {
                         if (s != null) {
                             if (s.length() > 0) {
                                 MainActivity.maxLength = Integer.parseInt(s.toString());
+                                if (isMaxLength){
+                                    gv.GeneratePassword();
+                                }
                             }
+
                         }
                     }
 
