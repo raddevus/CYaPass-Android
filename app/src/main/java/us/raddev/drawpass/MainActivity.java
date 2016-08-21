@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Canvas;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AlertDialog;
@@ -39,6 +40,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Set;
 import java.util.UUID;
 
@@ -53,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
-
+    static int REQUEST_ENABLE_BT = 1;
     /**
      * The {@link ViewPager} that will host the section contents.
      */
@@ -80,12 +82,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void clearGrid(){
+    private  void clearGrid(View v){
         gv.ClearGrid();
         password = "";
         passwordText.setText("");
-        clearClipboard();
-        gv.invalidate();
+        v.setWillNotDraw(false);
+        v.invalidate();
     }
 
 
@@ -111,13 +113,65 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //addNewSite(R.id.siteText);
-                clearGrid();
-                //clearAllUserPrefs(view);
+                clearGrid(view);
+                clearClipboard();
             }
         });
 
+        FloatingActionButton sendFab = (FloatingActionButton)findViewById(R.id.sendFab);
+        sendFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendPasswordViaBT();
+            }
+        });
+    }
 
+    private void sendPasswordViaBT(){
+        ConnectThread ct = null;
+        BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (btAdapter != null) {
+            if (!btAdapter.isEnabled()) {
+                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+            }
+        }
+
+        Set<BluetoothDevice> pairedDevices = btAdapter.getBondedDevices();
+            if (pairedDevices.size() > 0) {
+                for (BluetoothDevice btItem : pairedDevices) {
+                    if (btItem != null) {
+                        String name = btItem.getName();
+                        if (name.equals("RADBluex")) {
+                            UUID uuid = btItem.getUuids()[0].getUuid();
+                            Log.d("MainActivity", uuid.toString());
+                            if (ct == null) {
+                                ct = new ConnectThread(btItem, uuid, null);
+                            }
+                            ct.run(btAdapter);
+                            break;
+                        }
+                    }
+                }
+            }
+
+        String clipText = readClipboard();
+        Log.d("MainActivity", "on clipboard : " + clipText);
+        if (clipText != ""){
+            ct.writeMessage(clipText +"\n");
+            ct.cancel();
+        }
+
+    }
+
+    private String readClipboard() {
+        android.content.ClipboardManager clipboard = (android.content.ClipboardManager) appContext.getSystemService(Context.CLIPBOARD_SERVICE);
+        android.content.ClipData clip = clipboard.getPrimaryClip();
+        if (clip != null && clip.getItemCount() > 0) {
+            ClipData.Item item = clip.getItemAt(clip.getItemCount() - 1);
+            return item.getText().toString();
+        }
+        return "";
 
     }
 
@@ -293,15 +347,13 @@ public class MainActivity extends AppCompatActivity {
             }
             spinnerAdapter.clear();
             spinnerAdapter.add(new SiteInfo ("select site"));
+            spinnerAdapter.sort(new Comparator<SiteInfo>(){
+                public int compare(SiteInfo a1, SiteInfo a2) {
+                    return a1.toString().compareToIgnoreCase(a2.toString());
+                }
+            });
             spinnerAdapter.notifyDataSetChanged();
-        }
 
-        public void clearGrid(){
-            gv.ClearGrid();
-            password = "";
-            passwordText.setText("");
-            clearClipboard();
-            gv.invalidate();
         }
 
         private void addNewSite(int id){
@@ -350,6 +402,8 @@ public class MainActivity extends AppCompatActivity {
             alert.show();
         }
 
+
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -357,8 +411,10 @@ public class MainActivity extends AppCompatActivity {
             //final GridView gv = new us.raddev.drawpass.GridView(rootView.getContext());
             gv = new us.raddev.drawpass.GridView(getContext());
             rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            rootView.setWillNotDraw(false);
             LinearLayout mainlayout1 = (LinearLayout) rootView.findViewById(R.id.drawcross);
             mainlayout1.addView(gv,gv.cellSize*7,gv.cellSize*7);
+            container.setWillNotDraw(false);
 
             switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
                 case 1: {

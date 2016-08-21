@@ -38,16 +38,22 @@ public class ConnectThread extends Thread {
         try {
             // MY_UUID is the app's UUID string, also used by the server code
             Log.d("MainActivity", "creating RfcommSocket...");
-            logViewAdapter.add("creating RfcommSocket...");
-            logViewAdapter.notifyDataSetChanged();
+            if (logViewAdapter != null) {
+                logViewAdapter.add("creating RfcommSocket...");
+                logViewAdapter.notifyDataSetChanged();
+            }
             tmp = device.createRfcommSocketToServiceRecord(uuid);
             Log.d("MainActivity", "created.");
-            logViewAdapter.add("created");
-            logViewAdapter.notifyDataSetChanged();
+            if (logViewAdapter != null) {
+                logViewAdapter.add("created");
+                logViewAdapter.notifyDataSetChanged();
+            }
         } catch (IOException e) {
             Log.d("MainActivity", "FAILED! : " + e.getMessage());
-            logViewAdapter.add("FAILED! : " + e.getMessage());
-            logViewAdapter.notifyDataSetChanged();
+            if (logViewAdapter != null) {
+                logViewAdapter.add("FAILED! : " + e.getMessage());
+                logViewAdapter.notifyDataSetChanged();
+            }
         }
         mmSocket = tmp;
         try {

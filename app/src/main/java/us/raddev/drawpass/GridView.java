@@ -117,6 +117,7 @@ public class GridView extends View {
         //userShape.removeAll(userShape);
         LineSegments.clear();
         LineSegments = new LineSegments();
+
     }
 
     public boolean isLineSegmentComplete(){
