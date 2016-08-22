@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "427552387234",
+    "firebase_url": "https://cyapass.firebaseio.com",
+    "project_id": "cyapass",
+    "storage_bucket": "cyapass.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:427552387234:android:f5cf5be8df9da392",
+        "android_client_info": {
+          "package_name": "us.raddev.cyapass"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "427552387234-4t1ndhd4lun856bhv48mq6a616prfor8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSw3LSuuzH7Rv9z3lvjDNKDadbyJNCyrA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
