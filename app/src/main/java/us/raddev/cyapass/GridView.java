@@ -1,4 +1,4 @@
-package us.raddev.drawpass;
+package us.raddev.cyapass;
 
 import android.annotation.TargetApi;
 import android.app.Activity;

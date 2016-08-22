@@ -1,4 +1,4 @@
-package us.raddev.drawpass;
+package us.raddev.cyapass;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -120,22 +120,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Set<BluetoothDevice> pairedDevices = btAdapter.getBondedDevices();
-            if (pairedDevices.size() > 0) {
-                for (BluetoothDevice btItem : pairedDevices) {
-                    if (btItem != null) {
-                        String name = btItem.getName();
-                        if (name.equals("RADBluex")) {
-                            UUID uuid = btItem.getUuids()[0].getUuid();
-                            Log.d("MainActivity", uuid.toString());
-                            if (ct == null) {
-                                ct = new ConnectThread(btItem, uuid, null);
-                            }
-                            ct.run(btAdapter);
-                            break;
+        if (pairedDevices.size() > 0) {
+            for (BluetoothDevice btItem : pairedDevices) {
+                if (btItem != null) {
+                    String name = btItem.getName();
+                    if (name.equals("RADBluex")) {
+                        UUID uuid = btItem.getUuids()[0].getUuid();
+                        Log.d("MainActivity", uuid.toString());
+                        if (ct == null) {
+                            ct = new ConnectThread(btItem, uuid, null);
                         }
+                        ct.run(btAdapter);
+                        break;
                     }
                 }
             }
+        }
 
         String clipText = readClipboard();
         Log.d("MainActivity", "on clipboard : " + clipText);
@@ -392,8 +392,8 @@ public class MainActivity extends AppCompatActivity {
 
 
             View rootView = null;
-            //final GridView gv = new us.raddev.drawpass.GridView(rootView.getContext());
-            final GridView gv = new us.raddev.drawpass.GridView(appContext);
+            //final GridView gv = new us.raddev.cyapass.GridView(rootView.getContext());
+            final GridView gv = new us.raddev.cyapass.GridView(appContext);
 
             rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
@@ -475,11 +475,11 @@ public class MainActivity extends AppCompatActivity {
                     });
 
                     addSiteButton.setOnClickListener(new View.OnClickListener() {
-                         @Override
-                         public void onClick(View view) {
+                        @Override
+                        public void onClick(View view) {
                             addNewSite(R.id.siteText);
-                         }
-                     });
+                        }
+                    });
 
                     deleteSiteButton.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -581,7 +581,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     addUpperCaseCheckBox.setOnClickListener(new View.OnClickListener() {
-                    @Override
+                        @Override
                         public void onClick(View view) {
                             if (addUpperCaseCheckBox.isChecked()){
                                 MainActivity.isAddUppercase = true;
@@ -669,31 +669,31 @@ public class MainActivity extends AppCompatActivity {
                     });
                     maxLengthText.addTextChangedListener(new TextWatcher() {
 
-                    @Override
-                    public void afterTextChanged(Editable s) {
-                        if (s != null) {
-                            if (s.length() > 0) {
-                                MainActivity.maxLength = Integer.parseInt(s.toString());
-                                if (isMaxLength){
-                                    gv.GeneratePassword();
+                        @Override
+                        public void afterTextChanged(Editable s) {
+                            if (s != null) {
+                                if (s.length() > 0) {
+                                    MainActivity.maxLength = Integer.parseInt(s.toString());
+                                    if (isMaxLength){
+                                        gv.GeneratePassword();
+                                    }
                                 }
+
                             }
+                        }
+
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                            // TODO Auto-generated method stub
 
                         }
-                    }
 
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                        // TODO Auto-generated method stub
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-                    }
+                        }
 
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
-                });
+                    });
 
                     sendButton.setOnClickListener(new View.OnClickListener() {
                         @Override

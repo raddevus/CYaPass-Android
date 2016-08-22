@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DrawPass</string>
+    <string name="app_name">CYaPass</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="yes_button">Yes</string>

@@ -1,4 +1,4 @@
-package us.raddev.drawpass;
+package us.raddev.cyapass;
 
 import org.junit.Test;
 
