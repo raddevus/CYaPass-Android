@@ -32,13 +32,6 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-   <android.support.design.widget.FloatingActionButton
-        android:id="@+id/sendFab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/ic_menu_upload" />
 
     <com.google.android.gms.ads.AdView
         android:id="@+id/ad_view"
@@ -46,8 +39,16 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:layout_gravity="center_vertical"
+        android:layout_gravity="end|bottom"
         ads:adSize="BANNER"
         ads:adUnitId="@string/banner_ad_unit_id" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/sendFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@android:drawable/ic_menu_upload" />
 
 </android.support.design.widget.CoordinatorLayout>
