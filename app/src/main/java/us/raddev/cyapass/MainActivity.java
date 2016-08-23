@@ -290,7 +290,6 @@ public class MainActivity extends AppCompatActivity {
             //android.content.ClipData clip = android.content.ClipData.newPlainText("", "");
             android.content.ClipData clip = android.content.ClipData.newPlainText(null,null);
             clipboard.setPrimaryClip(clip);
-
         }
 
         private String readClipboard() {
@@ -301,7 +300,6 @@ public class MainActivity extends AppCompatActivity {
                 return item.getText().toString();
             }
             return "";
-
         }
 
         public static void loadSitesFromPrefs(View vx){
@@ -425,9 +423,14 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                             if (siteSpinner.getSelectedItemPosition() <= 0){
+                                gv.ClearGrid();
+                                gv.invalidate();
+
                                 passwordText.setText("");
                                 password = "";
+
                                 clearClipboard();
+
                                 return;
                             }
 
