@@ -109,9 +109,10 @@ public class ConnectThread extends Thread {
 
     public void writeCtrlAltDel(){
         try {
-            byte[] outByte = new byte[]{(byte)224,(byte)226,(byte)42};
-            mmOutStream.write(outByte);            if (logViewAdapter != null) {
-                logViewAdapter.add("Success; Wrote &");
+            byte[] outByte = new byte[]{0x01};
+            mmOutStream.write(outByte);
+            if (logViewAdapter != null) {
+                logViewAdapter.add("Success; Wrote 0x01");
                 logViewAdapter.notifyDataSetChanged();
             }
         }

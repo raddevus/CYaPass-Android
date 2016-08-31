@@ -79,14 +79,14 @@ android:orientation="vertical">
         android:layout_weight=".5"
         android:text="Send Ctrl-Alt-Del"
         android:id="@+id/sendCtrlAltDel"
-        android:textSize="5pt"/>
+        android:textSize="8pt"/>
     <CheckBox
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight=".5"
         android:text="Send &lt;ENTER&gt;"
         android:id="@+id/sendEnter"
-        android:textSize="5pt"/>
+        android:textSize="8pt"/>
 </LinearLayout>
 <LinearLayout
     android:layout_width="match_parent"
