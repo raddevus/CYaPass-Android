@@ -73,8 +73,14 @@ public class MainActivity extends AppCompatActivity {
     public static boolean isAddUppercase = false;
     public static boolean isAddSpecialChars = false;
     public static boolean isMaxLength = false;
+    public static String btCurrentDeviceName;
+    public static boolean isSendCtrlAltDel = false;
+    public static boolean isSendEnter = true;
     static String specialChars;
     static int maxLength = 25;
+    Set<BluetoothDevice> pairedDevices;
+    BluetoothAdapter btAdapter;
+    ConnectThread ct;
 
     private LinearLayout layout1;
 
@@ -96,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
         // Gets the ad view defined in layout/ad_fragment.xml with ad unit ID set in
         // values/strings.xml.
         mAdView = (AdView) findViewById(R.id.ad_view);
+
 
         // THIS IS THE CODE FOR PROD BUILDS WITH ADMOB
         /* AdView mAdView = (AdView) findViewById(R.id.adView);
@@ -128,7 +135,19 @@ public class MainActivity extends AppCompatActivity {
         sendFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (MainActivity.btCurrentDeviceName == ""){
+                    return;
+                }
                 sendPasswordViaBT();
+                if (isSendCtrlAltDel){
+                    ct.writeCtrlAltDel();
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        Log.d("MainActivity", e.getMessage());
+                    }
+                }
+                writeData();
             }
         });
     }
@@ -143,40 +162,64 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sendPasswordViaBT(){
-        ConnectThread ct = null;
-        BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        if (btAdapter == null) {
+            btAdapter = BluetoothAdapter.getDefaultAdapter();
+        }
         if (btAdapter != null) {
             if (!btAdapter.isEnabled()) {
                 Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
             }
         }
+        else
+        {
+            Log.d("MainActivity", "no bt adapter available");
+            return; // cannot get btadapter
+        }
 
-        Set<BluetoothDevice> pairedDevices = btAdapter.getBondedDevices();
+        if (pairedDevices == null) {
+            pairedDevices = btAdapter.getBondedDevices();
+        }
         if (pairedDevices.size() > 0) {
+
             for (BluetoothDevice btItem : pairedDevices) {
                 if (btItem != null) {
                     String name = btItem.getName();
-                    if (name.equals("RADBluex")) {
+                    if (name.equals(MainActivity.btCurrentDeviceName)) {
                         UUID uuid = btItem.getUuids()[0].getUuid();
                         Log.d("MainActivity", uuid.toString());
                         if (ct == null) {
                             ct = new ConnectThread(btItem, uuid, null);
                         }
                         ct.run(btAdapter);
-                        break;
+
+                        return;
                     }
                 }
             }
         }
+    }
 
+    private void writeData(){
         String clipText = readClipboard();
-        Log.d("MainActivity", "on clipboard : " + clipText);
-        if (clipText != ""){
-            ct.writeMessage(clipText);
-            ct.cancel();
+        if (isSendEnter){
+            clipText += "\n";
         }
-
+        Log.d("MainActivity", "on clipboard : " + clipText);
+        if (!clipText.equals("")){
+            ct.writeMessage(clipText);
+            try {
+                Thread.sleep(200);
+                ct.cancel();
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            finally {
+                ct = null;
+            }
+        }
     }
 
     private String readClipboard() {
@@ -335,6 +378,20 @@ public class MainActivity extends AppCompatActivity {
             return "";
         }
 
+        public void loadCurrentDeviceName(){
+            SharedPreferences devicePrefs = MainActivity.appContext.getSharedPreferences("deviceName", MODE_PRIVATE);
+            MainActivity.btCurrentDeviceName = devicePrefs.getString("deviceName","");
+
+        }
+
+        public void saveDeviceNamePref(){
+            SharedPreferences devicePrefs = appContext.getSharedPreferences("deviceName", MODE_PRIVATE);
+            SharedPreferences.Editor edit = devicePrefs.edit();
+            edit.putString("deviceName",MainActivity.btCurrentDeviceName);
+            edit.commit();
+            //PlaceholderFragment.loadSitesFromPrefs(v);
+        }
+
         public static void loadSitesFromPrefs(View vx){
             Log.d("MainActivity", "Loading sites from preferences");
 
@@ -421,7 +478,7 @@ public class MainActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
 
-
+            loadCurrentDeviceName();
             View rootView = null;
             //final GridView gv = new us.raddev.cyapass.GridView(rootView.getContext());
             final GridView gv = new us.raddev.cyapass.GridView(appContext);
@@ -561,7 +618,7 @@ public class MainActivity extends AppCompatActivity {
                 {
                     rootView = inflater.inflate(R.layout.fragment_settings, container, false);
 
-                    final ListView listView;
+                    final ListView btDeviceslist;
                     final ListView logView;
                     ArrayList<String> listViewItems = new ArrayList<String>();
 
@@ -578,14 +635,16 @@ public class MainActivity extends AppCompatActivity {
                     final CheckBox addUpperCaseCheckBox;
                     final CheckBox addCharsCheckBox;
                     final CheckBox maxLengthCheckBox;
+                    final CheckBox sendCtrlAltDelCheckbox;
+                    final CheckBox sendEnterCheckbox;
+
                     final EditText outText;
                     EditText specialCharsText;
                     EditText maxLengthText;
 
-                    listView = (ListView) rootView.findViewById(R.id.mainListView);
+                    btDeviceslist = (ListView) rootView.findViewById(R.id.btDeviceList);
                     logView = (ListView) rootView.findViewById(R.id.logView);
-                    yesButton = (Button)rootView.findViewById(R.id.YesButton);
-                    noButton = (Button)rootView.findViewById(R.id.NoButton);
+
                     sendButton = (Button)rootView.findViewById(R.id.sendButton);
 
                     outText = (EditText)rootView.findViewById(R.id.outText);
@@ -594,12 +653,15 @@ public class MainActivity extends AppCompatActivity {
                     maxLengthCheckBox = (CheckBox)rootView.findViewById(R.id.maxLengthCheckBox);
                     maxLengthText = (EditText)rootView.findViewById(R.id.maxLengthEditText);
                     specialCharsText = (EditText)rootView.findViewById(R.id.specialCharsTextBox);
+                    sendCtrlAltDelCheckbox = (CheckBox)rootView.findViewById(R.id.sendCtrlAltDel);
+                    sendEnterCheckbox = (CheckBox)rootView.findViewById(R.id.sendEnter);
 
+                    sendEnterCheckbox.setChecked(true);
                     maxLengthText.setText("25");
                     addUpperCaseCheckBox.requestFocus();
 
                     adapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_list_item_1, listViewItems);
-                    listView.setAdapter(adapter);
+                    btDeviceslist.setAdapter(adapter);
 
                     logViewAdapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_list_item_1, logViewItems);
                     logView.setAdapter(logViewAdapter);
@@ -615,6 +677,30 @@ public class MainActivity extends AppCompatActivity {
                         pairedDevices = GetPairedDevices(btAdapter);
                         //DiscoverAvailableDevices();
                     }
+
+                sendEnterCheckbox.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (sendEnterCheckbox.isChecked()){
+                            MainActivity.isSendEnter = true;
+                        }
+                        else{
+                            MainActivity.isSendEnter = false;
+                        }
+                    }
+                });
+
+                sendCtrlAltDelCheckbox.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (sendCtrlAltDelCheckbox.isChecked()){
+                            MainActivity.isSendCtrlAltDel = true;
+                        }
+                        else{
+                            MainActivity.isSendCtrlAltDel = false;
+                        }
+                    }
+                });
 
                     addUpperCaseCheckBox.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -664,20 +750,6 @@ public class MainActivity extends AppCompatActivity {
                                 Log.d("MainActivity", "set maxLength -- Re-generating password...");
                                 gv.GeneratePassword();
                             }
-                        }
-                    });
-
-                    noButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            ct.writeNo();
-                        }
-                    });
-
-                    yesButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            ct.writeYes();
                         }
                     });
 
@@ -745,43 +817,19 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
 
-                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    btDeviceslist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         public void onItemClick(AdapterView<?> parent, View view,
                                                 int position, long id) {
                             Log.d("MainActivity", "item clicked");
 
-                            Object o = listView.getItemAtPosition(position);
-                            String btDeviceInfo=(String)o;
-                            Log.d("MainActivity", "DeviceInfo : " + btDeviceInfo);
-                            logViewAdapter.add("DeviceInfo : " + btDeviceInfo);
+                            Object o = btDeviceslist.getItemAtPosition(position);
+                            btCurrentDeviceName=(String)o;
+                            saveDeviceNamePref();
+                            Log.d("MainActivity", "DeviceInfo : " + btCurrentDeviceName);
+                            logViewAdapter.add("DeviceInfo : " + btCurrentDeviceName);
                             logViewAdapter.notifyDataSetChanged();
 
-                            if (pairedDevices.size() > 0) {
-                                for (BluetoothDevice btItem : pairedDevices) {
-                                    if (btItem != null) {
-                                        logViewAdapter.add("btItem is good!");
-                                        logViewAdapter.notifyDataSetChanged();
-                                        String name = btItem.getName();
-                                        logViewAdapter.add(name);
-                                        logViewAdapter.notifyDataSetChanged();
-                                        if (name.equals(btDeviceInfo)) {
-                                            UUID uuid = btItem.getUuids()[0].getUuid();
-                                            Log.d("MainActivity", uuid.toString());
-                                            logViewAdapter.add("UUID : " + uuid.toString());
-                                            logViewAdapter.notifyDataSetChanged();
-                                            if (ct == null) {
-                                                ct = new ConnectThread(btItem, uuid, logViewAdapter);
-                                            }
-                                            ct.run(btAdapter);
-                                            return;
-                                        }
-                                    }
-                                }
-                            }
-                            else {
-                                logViewAdapter.add("btDevice is null");
-                                logViewAdapter.notifyDataSetChanged();
-                            }
+
                         }
                     });
                     break;
@@ -790,6 +838,7 @@ public class MainActivity extends AppCompatActivity {
 
             return rootView;
         }
+
     }
 
     /**

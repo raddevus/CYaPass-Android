@@ -85,7 +85,13 @@ public class ConnectThread extends Thread {
                 logViewAdapter.notifyDataSetChanged();
             }
 
-        } catch (IOException e) { }
+            Thread.sleep(500);
+
+        }
+        catch (IOException e) { }
+        catch (InterruptedException e) {
+            Log.d("MainActivity", e.getStackTrace().toString());
+        }
     }
 
     public void writeNo() {
@@ -101,16 +107,13 @@ public class ConnectThread extends Thread {
         } catch (IOException e) { }
     }
 
-    public void writeStartByte(){
+    public void writeCtrlAltDel(){
         try {
-            byte[] outByte = new byte[]{38};
-            mmOutStream.write(outByte);
-            if (logViewAdapter != null) {
+            byte[] outByte = new byte[]{(byte)224,(byte)226,(byte)42};
+            mmOutStream.write(outByte);            if (logViewAdapter != null) {
                 logViewAdapter.add("Success; Wrote &");
                 logViewAdapter.notifyDataSetChanged();
             }
-
-            mmOutStream.write(outByte);
         }
         catch (IOException e) { }
     }

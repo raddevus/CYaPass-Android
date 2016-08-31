@@ -65,7 +65,7 @@ android:orientation="vertical">
     android:layout_width="match_parent"
     android:layout_height="0dp"
     android:layout_weight=".3"
-    android:id="@+id/mainListView"
+    android:id="@+id/btDeviceList"
     tools:context="us.raddev.btfinder.MainActivity"
     >
 </ListView>
@@ -73,20 +73,20 @@ android:orientation="vertical">
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
-    <Button
+    <CheckBox
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight=".5"
-        android:id="@+id/YesButton"
-        android:text="Yes">
-    </Button>
-    <Button
+        android:text="Send Ctrl-Alt-Del"
+        android:id="@+id/sendCtrlAltDel"
+        android:textSize="5pt"/>
+    <CheckBox
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight=".5"
-        android:id="@+id/NoButton"
-        android:text="No">
-    </Button>
+        android:text="Send &lt;ENTER&gt;"
+        android:id="@+id/sendEnter"
+        android:textSize="5pt"/>
 </LinearLayout>
 <LinearLayout
     android:layout_width="match_parent"
@@ -107,7 +107,7 @@ android:orientation="vertical">
 <ListView
     android:layout_width="match_parent"
     android:layout_height="0dp"
-    android:layout_weight="0.62"
+    android:layout_weight="0.3"
     android:id="@+id/logView">
 
 </ListView>
