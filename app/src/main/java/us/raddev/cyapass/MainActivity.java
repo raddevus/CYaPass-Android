@@ -472,8 +472,6 @@ public class MainActivity extends AppCompatActivity {
             alert.show();
         }
 
-
-
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -491,6 +489,7 @@ public class MainActivity extends AppCompatActivity {
             //container.setWillNotDraw(false);
 
             Button clearGridButton;
+            final Spinner btDeviceSpinner;
 
             switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
                 case 1: {
@@ -618,7 +617,6 @@ public class MainActivity extends AppCompatActivity {
                 {
                     rootView = inflater.inflate(R.layout.fragment_settings, container, false);
 
-                    final ListView btDeviceslist;
                     final ListView logView;
                     ArrayList<String> listViewItems = new ArrayList<String>();
 
@@ -626,11 +624,6 @@ public class MainActivity extends AppCompatActivity {
                     final ArrayAdapter<String> logViewAdapter;
 
                     final BluetoothAdapter btAdapter;
-
-
-                    Button yesButton;
-                    Button noButton;
-                    Button sendButton;
 
                     final CheckBox addUpperCaseCheckBox;
                     final CheckBox addCharsCheckBox;
@@ -642,12 +635,9 @@ public class MainActivity extends AppCompatActivity {
                     EditText specialCharsText;
                     EditText maxLengthText;
 
-                    btDeviceslist = (ListView) rootView.findViewById(R.id.btDeviceList);
+                    btDeviceSpinner = (Spinner) rootView.findViewById(R.id.btDevice);
                     logView = (ListView) rootView.findViewById(R.id.logView);
 
-                    sendButton = (Button)rootView.findViewById(R.id.sendButton);
-
-                    outText = (EditText)rootView.findViewById(R.id.outText);
                     addUpperCaseCheckBox = (CheckBox)rootView.findViewById(R.id.addUCaseCheckBox);
                     addCharsCheckBox = (CheckBox)rootView.findViewById(R.id.addCharsCheckBox);
                     maxLengthCheckBox = (CheckBox)rootView.findViewById(R.id.maxLengthCheckBox);
@@ -657,15 +647,16 @@ public class MainActivity extends AppCompatActivity {
                     sendEnterCheckbox = (CheckBox)rootView.findViewById(R.id.sendEnter);
 
                     sendEnterCheckbox.setChecked(true);
-                    maxLengthText.setText("25");
+                    maxLengthText.setText("32");
                     addUpperCaseCheckBox.requestFocus();
 
                     adapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_list_item_1, listViewItems);
-                    btDeviceslist.setAdapter(adapter);
+                    btDeviceSpinner.setAdapter(adapter);
 
                     logViewAdapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_list_item_1, logViewItems);
                     logView.setAdapter(logViewAdapter);
-
+                    adapter.add("one thing");
+                    adapter.add("two thing");
                     adapter.notifyDataSetChanged();
 
                     btAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -803,35 +794,24 @@ public class MainActivity extends AppCompatActivity {
 
                     });
 
-                    sendButton.setOnClickListener(new View.OnClickListener() {
+                    btDeviceSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                         @Override
-                        public void onClick(View view) {
-                            String clipText = readClipboard();
-                            Log.d("MainActivity", "on clipboard : " + clipText);
-                            if (outText.getText().toString() == ""){
-                                ct.writeMessage(clipText);
-                            }
-                            else {
-                                ct.writeMessage(outText.getText().toString());
-                            }
-                        }
-                    });
-
-                    btDeviceslist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        public void onItemClick(AdapterView<?> parent, View view,
-                                                int position, long id) {
-                            Log.d("MainActivity", "item clicked");
-
-                            Object o = btDeviceslist.getItemAtPosition(position);
-                            btCurrentDeviceName=(String)o;
+                        public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                            btCurrentDeviceName = String.valueOf(btDeviceSpinner.getSelectedItem());
                             saveDeviceNamePref();
                             Log.d("MainActivity", "DeviceInfo : " + btCurrentDeviceName);
                             logViewAdapter.add("DeviceInfo : " + btCurrentDeviceName);
                             logViewAdapter.notifyDataSetChanged();
+                        }
 
-
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parentView) {
+                            // your code here
                         }
                     });
+
+                    InitializeDeviceSpinner(btDeviceSpinner);
+
                     break;
                 }
             }
@@ -839,6 +819,19 @@ public class MainActivity extends AppCompatActivity {
             return rootView;
         }
 
+        public  void InitializeDeviceSpinner(Spinner btDeviceSpinner){
+            if (btCurrentDeviceName != null && btCurrentDeviceName != ""){
+                int counter = 0;
+                for (; counter <  adapter.getCount();counter++)
+                {
+                    Log.d("MainActivity", "adapter.getItem : " + adapter.getItem(counter).toString());
+                    if (String.valueOf(adapter.getItem(counter)).equals( btCurrentDeviceName)){
+                        break;
+                    }
+                }
+                btDeviceSpinner.setSelection(counter);
+            }
+        }
     }
 
     /**
