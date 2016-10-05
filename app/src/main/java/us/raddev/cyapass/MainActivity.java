@@ -655,9 +655,6 @@ public class MainActivity extends AppCompatActivity {
 
                     logViewAdapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_list_item_1, logViewItems);
                     logView.setAdapter(logViewAdapter);
-                    adapter.add("one thing");
-                    adapter.add("two thing");
-                    adapter.notifyDataSetChanged();
 
                     btAdapter = BluetoothAdapter.getDefaultAdapter();
                     if (btAdapter != null) {
