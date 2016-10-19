@@ -19,7 +19,6 @@ public class UserPath {
     public void append(Point currentPoint, int postValue)
     {
         this.currentPoint = currentPoint;
-        previousPostValue = postValue;
 
         if (allPoints.size() >= 1)
         {
@@ -34,7 +33,7 @@ public class UserPath {
                     currentPoint, postValue + previousPostValue));
         }
         allPoints.add(currentPoint);
-
+        previousPostValue = postValue;
     }
 
     public void CalculateGeometricValue()
