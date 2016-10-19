@@ -43,6 +43,7 @@ public class GridView extends View {
     public int viewWidth;
     public int viewHeight;
     private Point currentPoint;
+    private UserPath us = new UserPath();
 
     int numOfCells = 5;
     public int cellSize; //125
@@ -79,21 +80,6 @@ public class GridView extends View {
         //leftOffset = (int)(viewWidth / .9) / 4;
         Log.d("MainActivity", "leftOffset : " + String.valueOf(leftOffset));
         GenerateAllPosts();
-/*        this.setOnClickListener(new OnClickListener(){
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-                Toast.makeText(v.getContext(), "You made a mess", Toast.LENGTH_LONG).show();
-            }
-
-        }); */
-
-
-//        Button yourButton = new Button(this.getContext());
-        //do stuff like add text and listeners.
-
-
-//       addView(yourButton);
-
 
         this.setOnTouchListener(new View.OnTouchListener() {
             @Override
