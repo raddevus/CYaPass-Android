@@ -42,7 +42,7 @@ public class Segment {
     public int hashCode() {
         String flippedHashValueString = String.format("%d%d%d%d",
                 this.End.x, this.End.y,
-                this.Begin.y, this.Begin.x);
+                this.Begin.x, this.Begin.y);
 
         String hashValueString = String.format("%d%d%d%d",
                 this.Begin.x, this.Begin.y,

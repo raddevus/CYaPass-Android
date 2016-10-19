@@ -24,7 +24,12 @@ public class UserPath {
         if (allPoints.size() >= 1)
         {
             int currentSegmentCount = allSegments.size();
-
+            if (allPoints.get(allPoints.size() - 1).x == currentPoint.x &&
+                    allPoints.get(allPoints.size() - 1).y == currentPoint.y)
+            {
+                // user clicked the same point twice
+                return;
+            }
             allSegments.add(new Segment(allPoints.get(allPoints.size() - 1),
                     currentPoint, postValue + previousPostValue));
         }

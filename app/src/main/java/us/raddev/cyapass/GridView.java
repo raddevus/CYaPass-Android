@@ -36,14 +36,12 @@ public class GridView extends View {
     private int leftOffset;
     private int highlightOffset;
     private int topOffset = 20;
-    private static List<Point> userShape = new ArrayList<Point>();
-    private Point previousPoint;
-    private static LineSegments LineSegments = new LineSegments();
     private Canvas xCanvas;
     public int viewWidth;
     public int viewHeight;
     private Point currentPoint;
     private UserPath us = new UserPath();
+    int hitTestIdx;
 
     int numOfCells = 5;
     public int cellSize; //125
@@ -93,7 +91,7 @@ public class GridView extends View {
                     currentPoint = new Point(touchX,touchY);
                     if (SelectNewPoint(currentPoint)) {
                         v.invalidate();
-                        CalculateGeometricSaltValue();
+                        us.CalculateGeometricValue();
                         GeneratePassword();
                     }
                 }
@@ -103,28 +101,14 @@ public class GridView extends View {
     }
 
     public void ClearGrid(){
-        userShape.clear();
-        userShape = new ArrayList<Point>();
-        //userShape.removeAll(userShape);
-        LineSegments.clear();
-        LineSegments = new LineSegments();
+        us = new UserPath();
         invalidate();
         vx.invalidate();
-
     }
 
     public boolean isLineSegmentComplete(){
-        //determines whether or not the userShape has at least x points in it
-        // this is an arbitrary definition of it being a valid shape based upon size
-        Log.d("MainActivity", "isLineSegmentComplete()");
-        Log.d("MainActivity", userShape.toString());
-        if (LineSegments == null){
-            return false;
-        }
-        if (LineSegments.size() >= 1){ // we consider 2 points a valid shape (a single line)
-            return true;
-        }
-        return false;
+        if (us == null || us.allSegments == null){return false;}
+        return (us.allSegments.size() > 0);
     }
 
     private void DrawUserShapes(Canvas canvas){
@@ -132,41 +116,24 @@ public class GridView extends View {
         paint.setColor(Color.BLUE);
         paint.setStrokeWidth(8);
         paint.setStyle(Paint.Style.STROKE);
-        if (LineSegments.size() > 0) {
 
-        }
-        for (int j=0;j < LineSegments.size();j++) {
-            canvas.drawCircle((float) LineSegments.get(j).Start.x,
-                    (float) LineSegments.get(j).Start.y,
+        for (Segment s : us.allSegments) {
+            canvas.drawCircle((float) s.Begin.x,
+                    (float) s.Begin.y,
                      highlightOffset, paint);
-            canvas.drawLine(LineSegments.get(j).Start.x, LineSegments.get(j).Start.y,
-                    LineSegments.get(j).End.x,
-                    LineSegments.get(j).End.y, paint);
+            canvas.drawLine(s.Begin.x, s.Begin.y,
+                    s.End.x,
+                    s.End.y, paint);
 //            Log.d("MainActivity", "DONE drawing line...");
         }
 
-    }
-
-    private boolean IsNewLineSegment(LineSegment l)
-    {
-        LineSegment duplicate = LineSegments.CheckDuplicate(l);//  Find(ls => (ls.Start.X == l.Start.X && ls.Start.Y == l.Start.Y) && (ls.End.X == l.End.X && ls.End.Y == l.End.Y) || (ls.End.X == l.Start.X && ls.End.Y == l.Start.Y) && (ls.Start.X == l.End.X && ls.Start.Y == l.End.Y));
-        if (duplicate == null)
-        {
-            Log.d("MainActivity", "NOT a DUP!");
-            return true;
-        }
-        else
-        {
-            Log.d("MainActivity", "It's a DUP!");
-            return false;
-        }
     }
 
     private void DrawHighlight(Point p){
         Log.d("MainActivity", "DrawHighlight()...");
         Log.d("MainActivity", p.toString());
         Paint paint = new Paint();
-        if (userShape.size() == 1) {
+        if (us.allPoints.size() == 1) {
             paint.setColor(Color.CYAN);
         }
         else
@@ -184,78 +151,19 @@ public class GridView extends View {
 
     private boolean SelectNewPoint(Point p)
     {
-        boolean isNewPoint = false;
         Point currentPoint = HitTest(new Point(p.x, p.y));
-        if (currentPoint != null)
+        if (currentPoint == null)
         {
-            if (IsNewPoint(currentPoint))
-            {
-                if (userShape.size() > 0)
-                {
-                    if (IsNewLineSegment(new LineSegment(userShape.get(userShape.size() - 1), currentPoint))) // never allow a duplicate line segment in the list
-                    {
-                        LineSegments.add(new LineSegment(userShape.get(userShape.size() - 1), currentPoint));
-                    }
-                }
-                userShape.add(currentPoint);
-                isNewPoint = true;
-
-            }
-            //DrawHighlight(currentPoint);
-            previousPoint = currentPoint;
+            return false;
         }
-        return isNewPoint;
+        us.append(currentPoint,hitTestIdx);
+        us.CalculateGeometricValue();
+
+        return true;
     }
 
     public void GeneratePassword(){
         CreateHash();
-    }
-
-    private void CalculateGeometricSaltValue()
-    {
-        LineSegments.PostPoints = "";
-        LineSegments.PostValue = 0;
-
-        for (LineSegment l : LineSegments)
-        {
-            for (int x = 0; x < _allPosts.size(); x++)
-            {
-                if (l.Start.x == _allPosts.get(x).x && l.Start.y == _allPosts.get(x).y)
-                {
-                    Log.d("MainActivity",String.format("START x : %d", x));
-                    LineSegments.AddOn(x);
-                }
-                if (l.End.x == _allPosts.get(x).x && l.End.y == _allPosts.get(x).y)
-                {
-                    Log.d("MainActivity",String.format("END x : %d", x));
-                    LineSegments.AddOn(x);
-                }
-            }
-        }
-        Log.d("MainActivity",String.format("Value : %d",LineSegments.PostValue));
-        Log.d("MainActivity",String.format("Points: %s",LineSegments.PostPoints));
-    }
-
-    private boolean IsNewPoint(Point currentPoint)
-    {
-        if (userShape.size() > 0)
-        {
-            if (userShape.size() > 1)
-            {
-
-                if (!((currentPoint.x == userShape.get(userShape.size() - 1).x && currentPoint.y == userShape.get(userShape.size() - 1).y)
-                        || (currentPoint.x == userShape.get(userShape.size() - 2).x || currentPoint.y == userShape.get(userShape.size() - 2).y)))
-                {
-                    return true;
-                }
-            }
-            if (!(currentPoint.x == userShape.get(userShape.size() - 1).x && currentPoint.y == userShape.get(userShape.size() - 1).y))
-            {
-                return true;
-            }
-        }
-        else { return true; }
-        return false;
     }
 
     private void GenerateAllPosts(){
@@ -283,7 +191,7 @@ public class GridView extends View {
         }
         String site = MainActivity.siteSpinner.getSelectedItem().toString();
         Log.d("MainActivity", "site: " + site);
-        String text = LineSegments.PostValue + site;
+        String text = us.PointValue + site;
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(text.getBytes(Charset.forName("UTF-8")));
@@ -379,13 +287,15 @@ public class GridView extends View {
         DrawPosts();
         DrawGridLines();
         DrawUserShapes(canvas);
-        if (userShape.size() > 0) {
-            DrawHighlight(userShape.get(userShape.size()-1));
+        if (us.allSegments.size() > 0) {
+            DrawHighlight(us.allPoints.get(us.allPoints.size()-1));
         }
     }
 
     private Point HitTest(Point p)
     {
+        int loopcount = 0;
+        hitTestIdx = 0;
         for (Point Pt : _allPosts)
         {
             if ((p.x >= (Pt.x ) - (postWidth*2)) && (p.x <= (Pt.x) + (postWidth*2)))
@@ -394,9 +304,11 @@ public class GridView extends View {
                 {
                     //String output = String.format("it's a hit: %d %d",p.x,p.y);
                     //Toast.makeText(this.getContext(), output, Toast.LENGTH_SHORT).show();
+                    hitTestIdx = loopcount;
                     return Pt;
                 }
             }
+            loopcount++;
         }
 
         return null;
