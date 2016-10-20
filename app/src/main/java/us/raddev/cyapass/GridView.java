@@ -40,7 +40,7 @@ public class GridView extends View {
     public int viewWidth;
     public int viewHeight;
     private Point currentPoint;
-    private UserPath us = new UserPath();
+    private static UserPath us = new UserPath();
     int hitTestIdx;
 
     int numOfCells = 5;
@@ -107,11 +107,14 @@ public class GridView extends View {
     }
 
     public boolean isLineSegmentComplete(){
-        if (us == null || us.allSegments == null){return false;}
-        return (us.allSegments.size() > 0);
+        //if (us == null || us.allSegments == null){return false;}
+        Log.d("MainActivity", "size ; " + String.valueOf(us.allSegments.size()));
+        Log.d("MainActivity", "size ; " + String.valueOf(this.us.allSegments.size()));
+        Log.d("MainActivity", "size ; " + String.valueOf(us.allPoints.size()));
+        return Boolean.valueOf(us.allSegments.size() > 0);
     }
 
-    private void DrawUserShapes(Canvas canvas){
+    private void DrawUserShape(Canvas canvas){
         Paint paint = new Paint();
         paint.setColor(Color.BLUE);
         paint.setStrokeWidth(8);
@@ -286,9 +289,9 @@ public class GridView extends View {
 
         DrawPosts();
         DrawGridLines();
-        DrawUserShapes(canvas);
-        if (us.allSegments.size() > 0) {
-            DrawHighlight(us.allPoints.get(us.allPoints.size()-1));
+        DrawUserShape(canvas);
+        if (us.allPoints.size() > 0) {
+            DrawHighlight(us.allPoints.get(0));
         }
     }
 

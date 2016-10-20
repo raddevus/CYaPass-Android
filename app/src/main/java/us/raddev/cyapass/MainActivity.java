@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
     public static boolean isSendCtrlAltDel = false;
     public static boolean isSendEnter = true;
     static String specialChars;
-    static int maxLength = 25;
+    static int maxLength = 32;
     Set<BluetoothDevice> pairedDevices;
     BluetoothAdapter btAdapter;
     ConnectThread ct;
