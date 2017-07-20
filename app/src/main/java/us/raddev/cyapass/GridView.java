@@ -42,6 +42,7 @@ public class GridView extends View {
     private Point currentPoint;
     private static UserPath us = new UserPath();
     int hitTestIdx;
+    private static boolean isPatternHidden;
 
     int numOfCells = 5;
     public int cellSize; //125
@@ -82,6 +83,7 @@ public class GridView extends View {
         this.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                if (isPatternHidden) {return true;}
                 if (event.getAction() == MotionEvent.ACTION_DOWN){
                     int touchX = (int)event.getX();
                     int touchY = (int)event.getY();
@@ -101,7 +103,9 @@ public class GridView extends View {
     }
 
     public void ClearGrid(){
-        us = new UserPath();
+        if (!isPatternHidden) {
+            us = new UserPath();
+        }
         invalidate();
         vx.invalidate();
     }
@@ -159,7 +163,7 @@ public class GridView extends View {
         {
             return false;
         }
-        us.append(currentPoint,hitTestIdx);
+        us.append(currentPoint,hitTestIdx + (hitTestIdx * (hitTestIdx / 6) * 10));
         us.CalculateGeometricValue();
 
         return true;
@@ -289,9 +293,11 @@ public class GridView extends View {
 
         DrawPosts();
         DrawGridLines();
-        DrawUserShape(canvas);
-        if (us.allPoints.size() > 0) {
-            DrawHighlight(us.allPoints.get(0));
+        if (!isPatternHidden) {
+            DrawUserShape(canvas);
+            if (us.allPoints.size() > 0) {
+                DrawHighlight(us.allPoints.get(0));
+            }
         }
     }
 
@@ -315,5 +321,13 @@ public class GridView extends View {
         }
 
         return null;
+    }
+
+    public boolean isPatternHidden() {
+        return isPatternHidden;
+    }
+
+    public void setPatternHidden(boolean patternHidden) {
+        isPatternHidden = patternHidden;
     }
 }

@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
     Set<BluetoothDevice> pairedDevices;
     BluetoothAdapter btAdapter;
     ConnectThread ct;
+    static CheckBox hidePatternCheckbox;
 
     private LinearLayout layout1;
 
@@ -493,7 +494,6 @@ public class MainActivity extends AppCompatActivity {
 
             switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
                 case 1: {
-
                     passwordText = (TextView) rootView.findViewById(R.id.password);
                     siteSpinner = (Spinner)rootView.findViewById(R.id.siteSpinner);
                     final CheckBox showPwdCheckBox = (CheckBox)rootView.findViewById(R.id.showPwd);
@@ -557,6 +557,10 @@ public class MainActivity extends AppCompatActivity {
 
                         @Override
                         public void onClick(View view) {
+                            gv.setPatternHidden(false);
+                            if (hidePatternCheckbox != null){
+                                hidePatternCheckbox.setChecked(false);
+                            }
 
                             gv.ClearGrid();
                             gv.invalidate();
@@ -631,6 +635,7 @@ public class MainActivity extends AppCompatActivity {
                     final CheckBox sendCtrlAltDelCheckbox;
                     final CheckBox sendEnterCheckbox;
 
+
                     final EditText outText;
                     EditText specialCharsText;
                     EditText maxLengthText;
@@ -645,6 +650,7 @@ public class MainActivity extends AppCompatActivity {
                     specialCharsText = (EditText)rootView.findViewById(R.id.specialCharsTextBox);
                     sendCtrlAltDelCheckbox = (CheckBox)rootView.findViewById(R.id.sendCtrlAltDel);
                     sendEnterCheckbox = (CheckBox)rootView.findViewById(R.id.sendEnter);
+                    hidePatternCheckbox = (CheckBox)rootView.findViewById(R.id.hidePatternCheckBox);
 
                     sendEnterCheckbox.setChecked(true);
                     maxLengthText.setText("32");
@@ -665,6 +671,21 @@ public class MainActivity extends AppCompatActivity {
                         pairedDevices = GetPairedDevices(btAdapter);
                         //DiscoverAvailableDevices();
                     }
+
+                hidePatternCheckbox.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (hidePatternCheckbox.isChecked()){
+                            gv.setPatternHidden(true);
+                            gv.ClearGrid();
+                            gv.invalidate();
+                        }
+                        else{
+                            gv.setPatternHidden(false);
+                        }
+
+                    }
+                });
 
                 sendEnterCheckbox.setOnClickListener(new View.OnClickListener() {
                     @Override
