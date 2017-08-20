@@ -14,6 +14,7 @@ import android.os.Build;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -52,6 +53,7 @@ public class GridView extends View {
     public GridView(Context context) {
         super(context);
         _context = context;
+
 /*        if (Build.VERSION.SDK_INT >= 11) {
             setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         } */
@@ -288,8 +290,23 @@ public class GridView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        this.xCanvas = canvas;
+       this.xCanvas = canvas;
         super.onDraw(canvas);
+
+        DrawPosts();
+        DrawGridLines();
+        if (!isPatternHidden) {
+            DrawUserShape(canvas);
+            if (us.allPoints.size() > 0) {
+                DrawHighlight(us.allPoints.get(0));
+            }
+        }
+    }
+
+    @Override
+    protected void dispatchDraw (Canvas canvas){
+        this.xCanvas = canvas;
+        super.dispatchDraw(canvas);
 
         DrawPosts();
         DrawGridLines();

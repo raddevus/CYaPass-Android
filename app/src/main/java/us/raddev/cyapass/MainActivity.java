@@ -476,7 +476,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-
             loadCurrentDeviceName();
             View rootView = null;
             //final GridView gv = new us.raddev.cyapass.GridView(rootView.getContext());
@@ -678,7 +677,7 @@ public class MainActivity extends AppCompatActivity {
                         if (hidePatternCheckbox.isChecked()){
                             gv.setPatternHidden(true);
                             gv.ClearGrid();
-                            gv.invalidate();
+                            //gv.invalidate();
                         }
                         else{
                             gv.setPatternHidden(false);
