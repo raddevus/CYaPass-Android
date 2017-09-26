@@ -9,8 +9,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.Canvas;
-import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AlertDialog;
@@ -327,8 +325,8 @@ public class MainActivity extends AppCompatActivity {
         private ConnectThread ct;
         private Set<BluetoothDevice> pairedDevices;
         private static String password;
-        private static ArrayList<SiteInfo> spinnerItems = new ArrayList<SiteInfo>();
-        private static ArrayAdapter<SiteInfo> spinnerAdapter;
+        private static ArrayList<SiteKey> spinnerItems = new ArrayList<SiteKey>();
+        private static ArrayAdapter<SiteKey> spinnerAdapter;
 
 
         public PlaceholderFragment() {
@@ -406,7 +404,7 @@ public class MainActivity extends AppCompatActivity {
             for (String s : allSites){
                 Log.d("MainActivity", "s : " + s);
                 if (s != "") {
-                    spinnerAdapter.add(new SiteInfo(s));
+                    spinnerAdapter.add(new SiteKey(s));
                 }
             }
             spinnerAdapter.notifyDataSetChanged();
@@ -414,12 +412,12 @@ public class MainActivity extends AppCompatActivity {
 
         private static void initializeSpinnerAdapter(View v){
             if (spinnerAdapter == null) {
-                spinnerAdapter = new ArrayAdapter<SiteInfo>(v.getContext(), android.R.layout.simple_list_item_1, spinnerItems);
+                spinnerAdapter = new ArrayAdapter<SiteKey>(v.getContext(), android.R.layout.simple_list_item_1, spinnerItems);
             }
             spinnerAdapter.clear();
-            spinnerAdapter.add(new SiteInfo ("select site"));
-            spinnerAdapter.sort(new Comparator<SiteInfo>(){
-                public int compare(SiteInfo a1, SiteInfo a2) {
+            spinnerAdapter.add(new SiteKey("select site"));
+            spinnerAdapter.sort(new Comparator<SiteKey>(){
+                public int compare(SiteKey a1, SiteKey a2) {
                     return a1.toString().compareToIgnoreCase(a2.toString());
                 }
             });
@@ -593,7 +591,7 @@ public class MainActivity extends AppCompatActivity {
                                                 spinnerAdapter.notifyDataSetChanged();
                                                 MainActivity.clearAllUserPrefs();
                                                 int siteCounter = 0;
-                                                for (SiteInfo s : spinnerItems){
+                                                for (SiteKey s : spinnerItems){
                                                     // siteCounter insures we do not add the empty
                                                     // site item to the user prefs
                                                     if (siteCounter > 0) {
