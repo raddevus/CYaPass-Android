@@ -40,11 +40,13 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.google.gson.Gson;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -101,8 +103,9 @@ public class MainActivity extends AppCompatActivity {
         // Gets the ad view defined in layout/ad_fragment.xml with ad unit ID set in
         // values/strings.xml.
         mAdView = (AdView) findViewById(R.id.ad_view);
-
-
+        List<SiteKey> allSites = new ArrayList<SiteKey>();
+        allSites.add(new SiteKey("garbage"));
+        SiteKey.toJSON(allSites);
         // THIS IS THE CODE FOR PROD BUILDS WITH ADMOB
         /* AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
@@ -397,14 +400,24 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences sitePrefs = MainActivity.appContext.getSharedPreferences("sites", MODE_PRIVATE);
             initializeSpinnerAdapter(vx);
             String sites = sitePrefs.getString("sites", "");
-
-            String[] allSites = sites.split(",");
-            Log.d("MainActivity", "sites : " + sites);
-            Log.d("MainActivity", "Reading items from prefs");
-            for (String s : allSites){
-                Log.d("MainActivity", "s : " + s);
-                if (s != "") {
-                    spinnerAdapter.add(new SiteKey(s));
+            Gson gson = new Gson();
+            List<SiteKey> allSiteKeys = new ArrayList<SiteKey>();
+            try {
+                allSiteKeys = gson.fromJson(sites, allSiteKeys.getClass());
+                for (SiteKey sk : allSiteKeys){
+                    spinnerAdapter.add(sk);
+                }
+            }
+            catch (Exception x) {
+                Log.d("MainActivity", x.getMessage());
+                String[] allSites = sites.split(",");
+                Log.d("MainActivity", "sites : " + sites);
+                Log.d("MainActivity", "Reading items from prefs");
+                for (String s : allSites) {
+                    Log.d("MainActivity", "s : " + s);
+                    if (s != "") {
+                        spinnerAdapter.add(new SiteKey(s));
+                    }
                 }
             }
             spinnerAdapter.notifyDataSetChanged();

@@ -4,8 +4,47 @@
     android:layout_height="match_parent"
     android:id="@+id/configDialog">
     <EditText
+        android:layout_weight=".2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:id="@+id/siteText"/>
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_weight=".4"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+        <CheckBox
+            android:layout_weight=".3"
+            android:id="@+id/addUpperCaseCheckBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Add Uppercase"/>
+
+        <CheckBox
+            android:layout_weight=".3"
+            android:id="@+id/addSpecialCharsCheckBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Add Special Chars"/>
+
+        <LinearLayout
+            android:layout_weight=".3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+        <CheckBox
+            android:layout_weight=".7"
+            android:id="@+id/setMaxLengthCheckBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Set Max Length"/>
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight=".3"
+                android:id="@+id/maxLengthEditText"
+                android:inputType="number"/>
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>
