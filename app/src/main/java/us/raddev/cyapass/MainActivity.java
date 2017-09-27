@@ -47,6 +47,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -82,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
     BluetoothAdapter btAdapter;
     ConnectThread ct;
     static CheckBox hidePatternCheckbox;
+    private static List<SiteKey> allSiteKeys;
 
     private LinearLayout layout1;
 
@@ -103,9 +105,7 @@ public class MainActivity extends AppCompatActivity {
         // Gets the ad view defined in layout/ad_fragment.xml with ad unit ID set in
         // values/strings.xml.
         mAdView = (AdView) findViewById(R.id.ad_view);
-        List<SiteKey> allSites = new ArrayList<SiteKey>();
-        allSites.add(new SiteKey("garbage"));
-        SiteKey.toJSON(allSites);
+
         // THIS IS THE CODE FOR PROD BUILDS WITH ADMOB
         /* AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
@@ -232,25 +232,20 @@ public class MainActivity extends AppCompatActivity {
             return item.getText().toString();
         }
         return "";
-
     }
 
-    public static void addUserPrefValue(String currentValue){
+    public static void saveUserPrefValues(){
         SharedPreferences sites = MainActivity.appContext.getSharedPreferences("sites", MODE_PRIVATE);
         String outValues = sites.getString("sites", "");
         Log.d("MainActivity", sites.getString("sites", ""));
         SharedPreferences.Editor edit = sites.edit();
 
-        if (outValues != "") {
-            outValues += "," + currentValue;
-        } else {
-            outValues += currentValue;
+        Gson gson = new Gson();
+        outValues = SiteKey.toJson(allSiteKeys);
 
-        }
         edit.putString("sites", outValues);
         edit.commit();
         Log.d("MainActivity", "final outValues : " + outValues);
-
     }
 
     public static void clearAllUserPrefs(){
@@ -401,9 +396,9 @@ public class MainActivity extends AppCompatActivity {
             initializeSpinnerAdapter(vx);
             String sites = sitePrefs.getString("sites", "");
             Gson gson = new Gson();
-            List<SiteKey> allSiteKeys = new ArrayList<SiteKey>();
+            allSiteKeys = new ArrayList<SiteKey>();
             try {
-                allSiteKeys = gson.fromJson(sites, allSiteKeys.getClass());
+                allSiteKeys = (List<SiteKey>)gson.fromJson(sites, new TypeToken<List<SiteKey>>(){}.getType());
                 for (SiteKey sk : allSiteKeys){
                     spinnerAdapter.add(sk);
                 }
@@ -459,13 +454,9 @@ public class MainActivity extends AppCompatActivity {
 
                             EditText input = (EditText) v.findViewById(R.id.siteText);
                             String currentValue = input.getText().toString();
-                            if (currentValue != "") {
-                                if (outValues != "") {
-                                    outValues += "," + currentValue;
-                                } else {
-                                    outValues += currentValue;
-                                }
-                            }
+                            allSiteKeys.add(new SiteKey(currentValue));
+                            Gson gson = new Gson();
+                            outValues = gson.toJson(allSiteKeys,allSiteKeys.getClass());
                             edit.putString("sites", outValues);
                             edit.commit();
                             Log.d("MainActivity", "final outValues : " + outValues);
@@ -600,18 +591,20 @@ public class MainActivity extends AppCompatActivity {
                                         .setMessage("Are you sure you want to delete this site?")
                                         .setPositiveButton(R.string.yes_button, new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
+                                                SiteKey removedSiteKey = null;
+                                                for (SiteKey sk : allSiteKeys){
+                                                    // find SK with matching text
+                                                    if (sk.toString() == siteSpinner.getSelectedItem().toString())
+                                                    {
+                                                        removedSiteKey = sk;
+                                                    }
+                                                }
                                                 spinnerItems.remove(siteSpinner.getSelectedItemPosition());
                                                 spinnerAdapter.notifyDataSetChanged();
+                                                allSiteKeys.remove(removedSiteKey);
                                                 MainActivity.clearAllUserPrefs();
-                                                int siteCounter = 0;
-                                                for (SiteKey s : spinnerItems){
-                                                    // siteCounter insures we do not add the empty
-                                                    // site item to the user prefs
-                                                    if (siteCounter > 0) {
-                                                        MainActivity.addUserPrefValue(s.toString());
-                                                    }
-                                                    siteCounter++;
-                                                }
+                                                saveUserPrefValues();
+
                                                 siteSpinner.setSelection(0,true);
                                             }
                                         })

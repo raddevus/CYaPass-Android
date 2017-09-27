@@ -26,10 +26,11 @@ public class SiteKey {
         this.key = _name;
     }
 
-    public static void toJSON(List<SiteKey> sk){
+    public static String toJson(List<SiteKey> sk){
         Gson gson = new Gson();
         Log.d("MainActivity", "######################");
         Log.d("MainActivity", gson.toJson(sk));
+        return gson.toJson(sk);
     }
 
     @Override
