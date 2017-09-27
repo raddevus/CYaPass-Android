@@ -84,6 +84,11 @@ public class MainActivity extends AppCompatActivity {
     ConnectThread ct;
     static CheckBox hidePatternCheckbox;
     private static List<SiteKey> allSiteKeys;
+    private static SiteKey currentSiteKey;
+    static CheckBox addCharsCheckBox;
+    static CheckBox addUpperCaseCheckBox;
+    static CheckBox maxLengthCheckBox;
+    static EditText maxLengthText;
 
     private LinearLayout layout1;
 
@@ -92,7 +97,6 @@ public class MainActivity extends AppCompatActivity {
         //android.content.ClipData clip = android.content.ClipData.newPlainText("", "");
         android.content.ClipData clip = android.content.ClipData.newPlainText(null,null);
         clipboard.setPrimaryClip(clip);
-
     }
 
     @Override
@@ -450,11 +454,23 @@ public class MainActivity extends AppCompatActivity {
                             Log.d("MainActivity", sites.getString("sites", ""));
                             SharedPreferences.Editor edit = sites.edit();
 
+                            CheckBox ucCheckBox = (CheckBox)v.findViewById(R.id.addUppercaseCheckBox);
+                            CheckBox specCharsCheckBox = (CheckBox)v.findViewById(R.id.addSpecialCharsCheckBox);
+                            CheckBox maxLengthCheckBox = (CheckBox)v.findViewById(R.id.setMaxLengthCheckBox);
+                            EditText maxLengthEditText = (EditText)v.findViewById(R.id.maxLengthEditText);
+
                             //edit.clear();
 
                             EditText input = (EditText) v.findViewById(R.id.siteText);
                             String currentValue = input.getText().toString();
-                            allSiteKeys.add(new SiteKey(currentValue));
+
+                            currentSiteKey = new SiteKey(currentValue,
+                                    specCharsCheckBox.isChecked(),
+                                    ucCheckBox.isChecked(),
+                                    maxLengthCheckBox.isChecked(),
+                                    maxLengthCheckBox.isChecked() ? Integer.parseInt(String.valueOf(maxLengthEditText.getText())) : 0);
+
+                            allSiteKeys.add(currentSiteKey);
                             Gson gson = new Gson();
                             outValues = gson.toJson(allSiteKeys,allSiteKeys.getClass());
                             edit.putString("sites", outValues);
@@ -462,6 +478,10 @@ public class MainActivity extends AppCompatActivity {
                             Log.d("MainActivity", "final outValues : " + outValues);
                             PlaceholderFragment.loadSitesFromPrefs(v);
                             siteSpinner.setSelection(siteSpinner.getCount()-1, true);
+
+                            addCharsCheckBox.setChecked(currentSiteKey.isHasSpecialChars());
+                            addUpperCaseCheckBox.setChecked(currentSiteKey.isHasUpperCase());
+                            maxLengthCheckBox.setChecked(currentSiteKey.getMaxLength() > 0);
                         }
                     })
                     .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
@@ -523,6 +543,12 @@ public class MainActivity extends AppCompatActivity {
 
                                 return;
                             }
+
+                            currentSiteKey = (SiteKey)siteSpinner.getSelectedItem();
+                            addCharsCheckBox.setChecked(currentSiteKey.isHasSpecialChars());
+                            addUpperCaseCheckBox.setChecked(currentSiteKey.isHasUpperCase());
+                            maxLengthCheckBox.setChecked(currentSiteKey.getMaxLength() > 0);
+                            maxLengthText.setText(String.valueOf(currentSiteKey.getMaxLength()));
 
                             if (gv.isLineSegmentComplete()){
                                 gv.GeneratePassword();
@@ -631,17 +657,12 @@ public class MainActivity extends AppCompatActivity {
                     final ArrayAdapter<String> logViewAdapter;
 
                     final BluetoothAdapter btAdapter;
-
-                    final CheckBox addUpperCaseCheckBox;
-                    final CheckBox addCharsCheckBox;
-                    final CheckBox maxLengthCheckBox;
                     final CheckBox sendCtrlAltDelCheckbox;
                     final CheckBox sendEnterCheckbox;
 
 
                     final EditText outText;
                     EditText specialCharsText;
-                    EditText maxLengthText;
 
                     btDeviceSpinner = (Spinner) rootView.findViewById(R.id.btDevice);
                     logView = (ListView) rootView.findViewById(R.id.logView);

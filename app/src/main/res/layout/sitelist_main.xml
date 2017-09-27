@@ -20,7 +20,7 @@
         <CheckBox
             android:layout_weight=".5"
             android:padding="3dp"
-            android:id="@+id/addUpperCaseCheckBox"
+            android:id="@+id/addUppercaseCheckBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Add Uppercase"/>

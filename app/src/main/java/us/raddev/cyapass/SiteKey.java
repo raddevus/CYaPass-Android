@@ -16,14 +16,42 @@ public class SiteKey {
     private int maxLength;
     @SerializedName("HasSpecialChars")
     private boolean hasSpecialChars;
+
+    public int getMaxLength() {
+        return maxLength;
+    }
+
+    public boolean isHasSpecialChars() {
+        return hasSpecialChars;
+    }
+
+    public boolean isHasUpperCase() {
+        return hasUpperCase;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
     @SerializedName("HasUpperCase")
     private boolean hasUpperCase;
 
     @SerializedName("Key")
     private String key;
 
-    public SiteKey(String _name) {
-        this.key = _name;
+    public SiteKey(String key) {
+        this.key = key;
+    }
+
+    public SiteKey(String key, boolean hasSpecialChars,
+                   boolean hasUpperCase,
+                   boolean hasMaxLength,
+                   int maxLength)
+    {
+        this.key = key;
+        this.hasSpecialChars = hasSpecialChars;
+        this.hasUpperCase = hasUpperCase;
+        this.maxLength = maxLength;
     }
 
     public static String toJson(List<SiteKey> sk){
