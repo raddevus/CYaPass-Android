@@ -171,9 +171,7 @@ public class GridView extends View {
         return true;
     }
 
-    public void GeneratePassword(){
-        CreateHash();
-    }
+    public void GeneratePassword(){CreateHash();}
 
     private void GenerateAllPosts(){
         _allPosts = new ArrayList<Point>();
@@ -198,9 +196,9 @@ public class GridView extends View {
             MainActivity.SetPassword("");
             return;
         }
-        String site = MainActivity.siteSpinner.getSelectedItem().toString();
-        Log.d("MainActivity", "site: " + site);
-        String text = us.PointValue + site;
+        SiteKey currentSiteKey = (SiteKey)MainActivity.siteSpinner.getSelectedItem();
+        Log.d("MainActivity", "site: " + currentSiteKey.toString());
+        String text = us.PointValue + currentSiteKey.toString();
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(text.getBytes(Charset.forName("UTF-8")));
@@ -208,13 +206,15 @@ public class GridView extends View {
             for (byte b : hash) {
                 sb.append(String.format("%02x", b));
             }
-            if (MainActivity.isAddSpecialChars){
+            if (currentSiteKey.isHasSpecialChars()){
+                // yes, I still get the special chars from what the user typed on the form
+                // because I don't store special chars in JSON as a protection
                 if (MainActivity.specialChars != null && MainActivity.specialChars != "")
                 {
                     sb.insert(2, MainActivity.specialChars);
                 }
             }
-            if (MainActivity.isAddUppercase){
+            if (currentSiteKey.isHasUpperCase()){
                 Log.d("MainActivity", "calling addUpperCase()");
                 int firstLetterIndex = addUpperCase(sb.toString());
                 Log.d("MainActivity", "firstLetterIndex : " + String.valueOf(firstLetterIndex));
@@ -225,9 +225,9 @@ public class GridView extends View {
                     sb.setCharAt(firstLetterIndex, sb.toString().toUpperCase().charAt(firstLetterIndex));
                 }
             }
-            if (MainActivity.isMaxLength) {
+            if (currentSiteKey.getMaxLength()>0) {
                 StringBuilder temp = new StringBuilder();
-                temp.insert(0,sb.substring(0,MainActivity.maxLength));
+                temp.insert(0,sb.substring(0,currentSiteKey.getMaxLength()));
                 sb = temp;
             }
             Log.d("MainActivity", sb.toString());
