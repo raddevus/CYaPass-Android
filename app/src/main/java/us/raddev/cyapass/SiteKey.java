@@ -12,6 +12,18 @@ import java.util.List;
  */
 public class SiteKey {
 
+    public void setMaxLength(int maxLength) {
+        this.maxLength = maxLength;
+    }
+
+    public void setHasSpecialChars(boolean hasSpecialChars) {
+        this.hasSpecialChars = hasSpecialChars;
+    }
+
+    public void setHasUpperCase(boolean hasUpperCase) {
+        this.hasUpperCase = hasUpperCase;
+    }
+
     @SerializedName("MaxLength")
     private int maxLength;
     @SerializedName("HasSpecialChars")

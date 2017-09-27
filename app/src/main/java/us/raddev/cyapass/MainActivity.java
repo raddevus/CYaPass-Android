@@ -529,6 +529,20 @@ public class MainActivity extends AppCompatActivity {
 
                     addSiteButton.requestFocus();
 
+                    siteSpinner.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                        @Override
+                        public boolean onItemLongClick(AdapterView<?> parent,
+                                                    View view,
+                                                    int position,
+                                                    long id) {
+                            if (siteSpinner.getSelectedItemPosition() <= 0) {
+                                return false;
+                            }
+                            addNewSite(R.id.siteText);
+                            return true;
+                        }
+                    });
+
                     siteSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                         @Override
                         public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -739,10 +753,10 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View view) {
                             if (addUpperCaseCheckBox.isChecked()){
-                                MainActivity.isAddUppercase = true;
+                                currentSiteKey.setHasUpperCase(true);
                             }
                             else{
-                                MainActivity.isAddUppercase = false;
+                                currentSiteKey.setHasUpperCase(false);
                             }
 
                             if (gv.isLineSegmentComplete()){
@@ -756,10 +770,10 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View view) {
                             if (addCharsCheckBox.isChecked()){
-                                MainActivity.isAddSpecialChars = true;
+                                currentSiteKey.setHasSpecialChars(true);
                             }
                             else{
-                                MainActivity.isAddSpecialChars = false;
+                                currentSiteKey.setHasSpecialChars(false);
                             }
 
                             if (gv.isLineSegmentComplete()){
@@ -773,10 +787,10 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View view) {
                             if (maxLengthCheckBox.isChecked()){
-                                MainActivity.isMaxLength = true;
+                                currentSiteKey.setMaxLength(Integer.parseInt(maxLengthText.getText().toString()));
                             }
                             else{
-                                MainActivity.isMaxLength = false;
+                                currentSiteKey.setMaxLength(64);
                             }
 
                             if (gv.isLineSegmentComplete()){

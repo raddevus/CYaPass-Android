@@ -17,12 +17,14 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:background="@drawable/layout_groupbox">
+
         <Spinner
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight=".5"
             android:id="@+id/siteSpinner">
         </Spinner>
+
         <Button
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -88,3 +90,4 @@
 
 
 </LinearLayout>
+
