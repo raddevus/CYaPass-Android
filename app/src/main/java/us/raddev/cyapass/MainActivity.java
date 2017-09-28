@@ -403,6 +403,9 @@ public class MainActivity extends AppCompatActivity {
             allSiteKeys = new ArrayList<SiteKey>();
             try {
                 allSiteKeys = (List<SiteKey>)gson.fromJson(sites, new TypeToken<List<SiteKey>>(){}.getType());
+                if (allSiteKeys == null){
+                    allSiteKeys = new ArrayList<SiteKey>();
+                }
                 for (SiteKey sk : allSiteKeys){
                     spinnerAdapter.add(sk);
                 }
@@ -437,7 +440,86 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        private void addNewSite(int id){
+        private void editSite(){
+            LayoutInflater li = LayoutInflater.from(getContext());
+            final View v = li.inflate(R.layout.sitelist_main, null);
+
+            AlertDialog.Builder builder =
+                    new AlertDialog.Builder(v.getContext());
+
+            builder.setMessage( "Edit Site").setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            SharedPreferences sites = MainActivity.appContext.getSharedPreferences("sites", MODE_PRIVATE);
+                            String outValues = sites.getString("sites", "");
+                            Log.d("MainActivity", sites.getString("sites", ""));
+                            SharedPreferences.Editor edit = sites.edit();
+
+                            CheckBox ucCheckBox = (CheckBox)v.findViewById(R.id.addUppercaseCheckBox);
+                            CheckBox specCharsCheckBox = (CheckBox)v.findViewById(R.id.addSpecialCharsCheckBox);
+                            CheckBox maxLengthCheckBox = (CheckBox)v.findViewById(R.id.setMaxLengthCheckBox);
+                            EditText maxLengthEditText = (EditText)v.findViewById(R.id.maxLengthEditText);
+
+                            int originalLocation = allSiteKeys.indexOf(currentSiteKey);
+                            Log.d("MainActivity", "originalLocation : " + String.valueOf(originalLocation));
+                            allSiteKeys.remove(originalLocation);
+
+                            EditText input = (EditText) v.findViewById(R.id.siteText);
+                            String currentValue = input.getText().toString();
+
+                            currentSiteKey = new SiteKey(currentValue,
+                                    specCharsCheckBox.isChecked(),
+                                    ucCheckBox.isChecked(),
+                                    maxLengthCheckBox.isChecked(),
+                                    maxLengthCheckBox.isChecked() ? Integer.parseInt(String.valueOf(maxLengthEditText.getText())) : 0);
+
+                            allSiteKeys.add(originalLocation,currentSiteKey);
+                            Gson gson = new Gson();
+                            outValues = gson.toJson(allSiteKeys, allSiteKeys.getClass());
+
+                            edit.putString("sites", outValues);
+                            edit.commit();
+                            Log.d("MainActivity", "final outValues : " + outValues);
+                            PlaceholderFragment.loadSitesFromPrefs(v);
+                            siteSpinner.setSelection(originalLocation + 1);
+                            //siteSpinner.setSelection(  siteSpinner.getCount() - 1, true);
+
+                            addCharsCheckBox.setChecked(currentSiteKey.isHasSpecialChars());
+                            addUpperCaseCheckBox.setChecked(currentSiteKey.isHasUpperCase());
+                            maxLengthCheckBox.setChecked(currentSiteKey.getMaxLength() > 0);
+
+
+                        }
+                    })
+                    .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.setView(v);
+            CheckBox ucCheckBox = (CheckBox)v.findViewById(R.id.addUppercaseCheckBox);
+            CheckBox specCharsCheckBox = (CheckBox)v.findViewById(R.id.addSpecialCharsCheckBox);
+            CheckBox maxLengthCheckBox = (CheckBox)v.findViewById(R.id.setMaxLengthCheckBox);
+            EditText maxLengthEditText = (EditText)v.findViewById(R.id.maxLengthEditText);
+
+            EditText input = (EditText) v.findViewById(R.id.siteText);
+            input.setText(currentSiteKey.getKey());
+
+            Log.d("MainActivity", "EDIT!");
+            ucCheckBox.setChecked(currentSiteKey.isHasUpperCase());
+            Log.d("MainActivity", "uppercase : " + Boolean.valueOf(currentSiteKey.isHasUpperCase()));
+            specCharsCheckBox.setChecked(currentSiteKey.isHasSpecialChars());
+            maxLengthCheckBox.setChecked(currentSiteKey.getMaxLength()>0);
+            if (currentSiteKey.getMaxLength()>0){
+                maxLengthEditText.setText(String.valueOf(currentSiteKey.getMaxLength()));
+            }
+            alert.show();
+        }
+
+        private void addNewSite(){
 
             LayoutInflater li = LayoutInflater.from(getContext());
             final View v = li.inflate(R.layout.sitelist_main, null);
@@ -472,12 +554,12 @@ public class MainActivity extends AppCompatActivity {
 
                             allSiteKeys.add(currentSiteKey);
                             Gson gson = new Gson();
-                            outValues = gson.toJson(allSiteKeys,allSiteKeys.getClass());
+                            outValues = gson.toJson(allSiteKeys, allSiteKeys.getClass());
                             edit.putString("sites", outValues);
                             edit.commit();
                             Log.d("MainActivity", "final outValues : " + outValues);
                             PlaceholderFragment.loadSitesFromPrefs(v);
-                            siteSpinner.setSelection(siteSpinner.getCount()-1, true);
+                            siteSpinner.setSelection(siteSpinner.getCount() - 1, true);
 
                             addCharsCheckBox.setChecked(currentSiteKey.isHasSpecialChars());
                             addUpperCaseCheckBox.setChecked(currentSiteKey.isHasUpperCase());
@@ -529,16 +611,12 @@ public class MainActivity extends AppCompatActivity {
 
                     addSiteButton.requestFocus();
 
-                    siteSpinner.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                        @Override
-                        public boolean onItemLongClick(AdapterView<?> parent,
-                                                    View view,
-                                                    int position,
-                                                    long id) {
-                            if (siteSpinner.getSelectedItemPosition() <= 0) {
-                                return false;
-                            }
-                            addNewSite(R.id.siteText);
+                    siteSpinner.setOnLongClickListener(new View.OnLongClickListener() {
+                        public boolean onLongClick(View arg0) {
+                            currentSiteKey = (SiteKey)siteSpinner.getSelectedItem();
+                            Log.d("MainActivity", "LONGCLICK!!!");
+                            Log.d("MainActivity", currentSiteKey.getKey());
+                            editSite();
                             return true;
                         }
                     });
@@ -614,7 +692,7 @@ public class MainActivity extends AppCompatActivity {
                     addSiteButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            addNewSite(R.id.siteText);
+                            addNewSite();
                         }
                     });
 
