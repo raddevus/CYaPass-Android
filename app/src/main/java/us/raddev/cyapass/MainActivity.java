@@ -442,7 +442,7 @@ public class MainActivity extends AppCompatActivity {
 
         private void editSite(){
             LayoutInflater li = LayoutInflater.from(getContext());
-            final View v = li.inflate(R.layout.sitelist_main, null);
+            final View v = li.inflate(R.layout.sitelist_dialog_main, null);
 
             AlertDialog.Builder builder =
                     new AlertDialog.Builder(v.getContext());
@@ -459,7 +459,7 @@ public class MainActivity extends AppCompatActivity {
                             CheckBox ucCheckBox = (CheckBox)v.findViewById(R.id.addUppercaseCheckBox);
                             CheckBox specCharsCheckBox = (CheckBox)v.findViewById(R.id.addSpecialCharsCheckBox);
                             CheckBox maxLengthCheckBox = (CheckBox)v.findViewById(R.id.setMaxLengthCheckBox);
-                            EditText maxLengthEditText = (EditText)v.findViewById(R.id.maxLengthEditText);
+                            EditText maxLengthEditText = (EditText)v.findViewById(R.id.maxLengthEditTextTab);
 
                             int originalLocation = allSiteKeys.indexOf(currentSiteKey);
                             Log.d("MainActivity", "originalLocation : " + String.valueOf(originalLocation));
@@ -483,7 +483,6 @@ public class MainActivity extends AppCompatActivity {
                             Log.d("MainActivity", "final outValues : " + outValues);
                             PlaceholderFragment.loadSitesFromPrefs(v);
                             siteSpinner.setSelection(originalLocation + 1);
-                            //siteSpinner.setSelection(  siteSpinner.getCount() - 1, true);
 
                             addCharsCheckBox.setChecked(currentSiteKey.isHasSpecialChars());
                             addUpperCaseCheckBox.setChecked(currentSiteKey.isHasUpperCase());
@@ -503,7 +502,7 @@ public class MainActivity extends AppCompatActivity {
             CheckBox ucCheckBox = (CheckBox)v.findViewById(R.id.addUppercaseCheckBox);
             CheckBox specCharsCheckBox = (CheckBox)v.findViewById(R.id.addSpecialCharsCheckBox);
             CheckBox maxLengthCheckBox = (CheckBox)v.findViewById(R.id.setMaxLengthCheckBox);
-            EditText maxLengthEditText = (EditText)v.findViewById(R.id.maxLengthEditText);
+            EditText maxLengthEditText = (EditText)v.findViewById(R.id.maxLengthEditTextTab);
 
             EditText input = (EditText) v.findViewById(R.id.siteText);
             input.setText(currentSiteKey.getKey());
@@ -522,7 +521,7 @@ public class MainActivity extends AppCompatActivity {
         private void addNewSite(){
 
             LayoutInflater li = LayoutInflater.from(getContext());
-            final View v = li.inflate(R.layout.sitelist_main, null);
+            final View v = li.inflate(R.layout.sitelist_dialog_main, null);
 
             AlertDialog.Builder builder =
                     new AlertDialog.Builder(v.getContext());
@@ -539,7 +538,7 @@ public class MainActivity extends AppCompatActivity {
                             CheckBox ucCheckBox = (CheckBox)v.findViewById(R.id.addUppercaseCheckBox);
                             CheckBox specCharsCheckBox = (CheckBox)v.findViewById(R.id.addSpecialCharsCheckBox);
                             CheckBox maxLengthCheckBox = (CheckBox)v.findViewById(R.id.setMaxLengthCheckBox);
-                            EditText maxLengthEditText = (EditText)v.findViewById(R.id.maxLengthEditText);
+                            EditText maxLengthEditText = (EditText)v.findViewById(R.id.maxLengthEditTextTab);
 
                             //edit.clear();
 
@@ -762,7 +761,7 @@ public class MainActivity extends AppCompatActivity {
                     addUpperCaseCheckBox = (CheckBox)rootView.findViewById(R.id.addUCaseCheckBox);
                     addCharsCheckBox = (CheckBox)rootView.findViewById(R.id.addCharsCheckBox);
                     maxLengthCheckBox = (CheckBox)rootView.findViewById(R.id.maxLengthCheckBox);
-                    maxLengthText = (EditText)rootView.findViewById(R.id.maxLengthEditText);
+                    maxLengthText = (EditText)rootView.findViewById(R.id.maxLengthEditTextTab);
                     specialCharsText = (EditText)rootView.findViewById(R.id.specialCharsTextBox);
                     sendCtrlAltDelCheckbox = (CheckBox)rootView.findViewById(R.id.sendCtrlAltDel);
                     sendEnterCheckbox = (CheckBox)rootView.findViewById(R.id.sendEnter);
