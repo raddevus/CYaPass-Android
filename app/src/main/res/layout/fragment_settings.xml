@@ -24,7 +24,7 @@ android:orientation="vertical">
     <CheckBox
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/addUCaseCheckBox"
+        android:id="@+id/addUCaseTabCheckBox"
         android:text="Add Uppercase"/>
     <LinearLayout
         android:layout_width="match_parent"
@@ -35,12 +35,12 @@ android:orientation="vertical">
             android:layout_height="wrap_content"
             android:text="Add Special Chars"
             android:layout_weight=".6"
-            android:id="@+id/addCharsCheckBox"/>
+            android:id="@+id/addCharsTabCheckBox"/>
         <EditText
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight=".4"
-            android:id="@+id/specialCharsTextBox"/>
+            android:id="@+id/specialCharsTabTextBox"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -51,12 +51,12 @@ android:orientation="vertical">
             android:layout_height="wrap_content"
             android:text="Set Max Length"
             android:layout_weight=".6"
-            android:id="@+id/maxLengthCheckBox"/>
+            android:id="@+id/maxLengthTabCheckBox"/>
         <EditText
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight=".4"
-            android:id="@+id/maxLengthEditTextTab"
+            android:id="@+id/maxLengthTabEditText"
             android:inputType="number"/>
     </LinearLayout>
     <LinearLayout
