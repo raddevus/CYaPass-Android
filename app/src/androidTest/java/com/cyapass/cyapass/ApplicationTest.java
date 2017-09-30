@@ -1,4 +1,4 @@
-package us.cyapass.cyapass;
+package com.cyapass.cyapass;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

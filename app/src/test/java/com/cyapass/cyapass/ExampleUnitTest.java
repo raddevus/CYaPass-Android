@@ -1,4 +1,4 @@
-package us.cyapass.cyapass;
+package com.cyapass.cyapass;
 
 import org.junit.Test;
 
