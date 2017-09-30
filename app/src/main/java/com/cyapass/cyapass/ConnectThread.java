@@ -1,4 +1,4 @@
-package us.raddev.cyapass;
+package com.cyapass.cyapass;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;

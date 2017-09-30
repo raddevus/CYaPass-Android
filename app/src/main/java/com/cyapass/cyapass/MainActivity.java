@@ -1,4 +1,4 @@
-package us.raddev.cyapass;
+package com.cyapass.cyapass;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -589,8 +589,8 @@ public class MainActivity extends AppCompatActivity {
                                  Bundle savedInstanceState) {
             loadCurrentDeviceName();
             View rootView = null;
-            //final GridView gv = new us.raddev.cyapass.GridView(rootView.getContext());
-            final GridView gv = new us.raddev.cyapass.GridView(appContext);
+            //final GridView gv = new us.raddev.com.cyapass.cyapass.GridView(rootView.getContext());
+            final GridView gv = new com.cyapass.cyapass.GridView(appContext);
 
             rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
