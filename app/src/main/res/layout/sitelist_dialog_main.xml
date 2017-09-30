@@ -52,6 +52,7 @@
                 android:layout_weight=".7"
                 android:id="@+id/maxLengthEditText"
                 android:hint="set max"
+                android:text="32"
                 android:inputType="number"/>
 
     </LinearLayout>

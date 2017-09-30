@@ -890,7 +890,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void afterTextChanged(Editable s) {
                             MainActivity.specialChars = s.toString();
-                            if (MainActivity.isAddSpecialChars){
+                            if (currentSiteKey.isHasSpecialChars()){
                                 gv.GeneratePassword();
                             }
                         }
