@@ -32,6 +32,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -492,10 +493,10 @@ public class MainActivity extends AppCompatActivity {
                             edit.commit();
                             Log.d("MainActivity", "final outValues : " + outValues);
                             PlaceholderFragment.loadSitesFromPrefs(v);
-                            siteSpinner.setSelection(2);
+                            siteSpinner.setSelection(originalLocation +1,true);
 
                             setSettingsValues();
-                            siteSpinner.setSelection(originalLocation +1,true);
+
 
 
                         }
@@ -836,33 +837,15 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-                    addUpperCaseTabCheckBox.setOnClickListener(new View.OnClickListener() {
+                    addUpperCaseTabCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
-                        public void onClick(View view) {
-                            if (addUpperCaseTabCheckBox.isChecked()){
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                            if (isChecked){
                                 currentSiteKey.setHasUpperCase(true);
                             }
                             else{
                                 currentSiteKey.setHasUpperCase(false);
                             }
-
-                            if (gv.isLineSegmentComplete()){
-                                Log.d("MainActivity", "add uppercase -- Re-generating password...");
-                                gv.GeneratePassword();
-                            }
-                        }
-                    });
-
-                    addCharsTabCheckBox.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if (addCharsTabCheckBox.isChecked()){
-                                currentSiteKey.setHasSpecialChars(true);
-                            }
-                            else{
-                                currentSiteKey.setHasSpecialChars(false);
-                            }
-
                             if (gv.isLineSegmentComplete()){
                                 Log.d("MainActivity", "addChars -- Re-generating password...");
                                 gv.GeneratePassword();
@@ -870,22 +853,37 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
 
-                    maxLengthTabCheckBox.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if (maxLengthTabCheckBox.isChecked()){
-                                currentSiteKey.setMaxLength(Integer.parseInt(maxLengthTabEditText.getText().toString()));
-                            }
-                            else{
-                                currentSiteKey.setMaxLength(64);
-                            }
-
-                            if (gv.isLineSegmentComplete()){
-                                Log.d("MainActivity", "set maxLength -- Re-generating password...");
-                                gv.GeneratePassword();
-                            }
+                    addCharsTabCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (isChecked){
+                            currentSiteKey.setHasSpecialChars(true);
                         }
-                    });
+                        else{
+                            currentSiteKey.setHasSpecialChars(false);
+                        }
+                        if (gv.isLineSegmentComplete()){
+                            Log.d("MainActivity", "addChars -- Re-generating password...");
+                            gv.GeneratePassword();
+                        }
+                    }
+                });
+
+                maxLengthTabCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (isChecked){
+                            currentSiteKey.setMaxLength(Integer.parseInt(maxLengthTabEditText.getText().toString()));
+                        }
+                        else{
+                            currentSiteKey.setMaxLength(64);
+                        }
+                        if (gv.isLineSegmentComplete()){
+                            Log.d("MainActivity", "addChars -- Re-generating password...");
+                            gv.GeneratePassword();
+                        }
+                    }
+                });
 
                     specialCharsText.addTextChangedListener(new TextWatcher() {
 
