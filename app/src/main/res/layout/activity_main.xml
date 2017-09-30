@@ -8,7 +8,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="us.cyapass.cyapass.MainActivity">
+    tools:context="com.cyapass.cyapass.MainActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
