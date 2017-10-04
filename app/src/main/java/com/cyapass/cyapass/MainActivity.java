@@ -85,10 +85,6 @@ public class MainActivity extends AppCompatActivity {
     static CheckBox hidePatternCheckbox;
     private static List<SiteKey> allSiteKeys;
     public static SiteKey currentSiteKey;
-    static CheckBox addCharsTabCheckBox;
-    static CheckBox addUpperCaseTabCheckBox;
-    static CheckBox maxLengthTabCheckBox;
-    static EditText maxLengthTabEditText;
 
     private LinearLayout layout1;
 
@@ -332,6 +328,11 @@ public class MainActivity extends AppCompatActivity {
         private View rootView;
         private CheckBox showPwdCheckBox;
         private Spinner siteSpinner;
+
+        private static CheckBox addCharsTabCheckBox;
+        private static CheckBox addUpperCaseTabCheckBox;
+        private static CheckBox maxLengthTabCheckBox;
+        private static EditText maxLengthTabEditText;
 
         public PlaceholderFragment() {
         }
@@ -640,6 +641,7 @@ public class MainActivity extends AppCompatActivity {
                     siteSpinner.setOnLongClickListener(new View.OnLongClickListener() {
                         public boolean onLongClick(View arg0) {
                             currentSiteKey = (SiteKey)siteSpinner.getSelectedItem();
+                            if (currentSiteKey.getKey().equals("select site")){return false;}
                             Log.d("MainActivity", "LONGCLICK!!!");
                             Log.d("MainActivity", currentSiteKey.getKey());
                             editSite();
