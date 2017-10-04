@@ -177,7 +177,7 @@ public class GridView extends View {
     //@TargetApi(19)
     private void CreateHash(){
         //String site = MainActivity.siteKey.getText().toString();  //"amazon";
-        if (MainActivity.siteSpinner.getSelectedItemPosition() <= 0){
+        if (MainActivity.currentSiteKey == null){
             MainActivity.SetPassword("");
             return;
         }
@@ -185,7 +185,7 @@ public class GridView extends View {
             MainActivity.SetPassword("");
             return;
         }
-        SiteKey currentSiteKey = (SiteKey)MainActivity.siteSpinner.getSelectedItem();
+        SiteKey currentSiteKey = MainActivity.currentSiteKey;
         Log.d("MainActivity", "site: " + currentSiteKey.toString());
         String text = us.PointValue + currentSiteKey.toString();
         try {

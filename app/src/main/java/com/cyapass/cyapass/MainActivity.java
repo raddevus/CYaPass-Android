@@ -70,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
     private static Context appContext;
     private static TextView passwordText;
     private static String password;
-    public static Spinner siteSpinner;
     private static boolean isPwdVisible = true;
     public static boolean isAddUppercase = false;
     public static boolean isAddSpecialChars = false;
@@ -85,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
     ConnectThread ct;
     static CheckBox hidePatternCheckbox;
     private static List<SiteKey> allSiteKeys;
-    private static SiteKey currentSiteKey;
+    public static SiteKey currentSiteKey;
     static CheckBox addCharsTabCheckBox;
     static CheckBox addUpperCaseTabCheckBox;
     static CheckBox maxLengthTabCheckBox;
@@ -330,7 +329,9 @@ public class MainActivity extends AppCompatActivity {
         private static String password;
         private static ArrayList<SiteKey> spinnerItems = new ArrayList<SiteKey>();
         private static ArrayAdapter<SiteKey> spinnerAdapter;
-
+        private View rootView;
+        private CheckBox showPwdCheckBox;
+        private Spinner siteSpinner;
 
         public PlaceholderFragment() {
         }
@@ -586,10 +587,27 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
+        public void onResume() {
+            super.onResume();
+            Log.d("MainActivity", "onResume : " + getArguments().getInt(ARG_SECTION_NUMBER));
+            switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
+                case 1: {
+                    break;
+                }
+                case 2: {
+                    break;
+                }
+                case 3:{
+                    break;
+                }
+            }
+        }
+
+        @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             loadCurrentDeviceName();
-            View rootView = null;
+
             //final GridView gv = new us.raddev.com.cyapass.cyapass.GridView(rootView.getContext());
             final GridView gv = new com.cyapass.cyapass.GridView(appContext);
 
@@ -607,7 +625,7 @@ public class MainActivity extends AppCompatActivity {
                 case 1: {
                     passwordText = (TextView) rootView.findViewById(R.id.password);
                     siteSpinner = (Spinner)rootView.findViewById(R.id.siteSpinner);
-                    final CheckBox showPwdCheckBox = (CheckBox)rootView.findViewById(R.id.showPwd);
+                    showPwdCheckBox = (CheckBox)rootView.findViewById(R.id.showPwd);
                     showPwdCheckBox.setChecked(true);
                     clearGridButton = (Button)rootView.findViewById(R.id.clearGrid);
                     Button deleteSiteButton = (Button) rootView.findViewById(R.id.deleteSite);
@@ -633,6 +651,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                             if (siteSpinner.getSelectedItemPosition() <= 0){
+                                currentSiteKey = null;
                                 gv.ClearGrid();
                                 gv.invalidate();
 
@@ -640,6 +659,7 @@ public class MainActivity extends AppCompatActivity {
                                 password = "";
 
                                 clearClipboard();
+
 
                                 return;
                             }
@@ -709,27 +729,20 @@ public class MainActivity extends AppCompatActivity {
                     deleteSiteButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            if (MainActivity.siteSpinner.getSelectedItemPosition() <= 0){
+                            if (currentSiteKey == null){
                                 return; // add message box need to select a valid site
                             }
                             else
                             {
                                 new AlertDialog.Builder(view.getContext())
                                         .setTitle("Delete site?")
-                                        .setMessage("Are you sure you want to delete this site?")
+                                        .setMessage("Are you sure you want to delete this site : " + currentSiteKey.getKey() + "?")
                                         .setPositiveButton(R.string.yes_button, new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
-                                                SiteKey removedSiteKey = null;
-                                                for (SiteKey sk : allSiteKeys){
-                                                    // find SK with matching text
-                                                    if (sk.toString() == siteSpinner.getSelectedItem().toString())
-                                                    {
-                                                        removedSiteKey = sk;
-                                                    }
-                                                }
-                                                spinnerItems.remove(siteSpinner.getSelectedItemPosition());
+
+                                                spinnerItems.remove(currentSiteKey);
                                                 spinnerAdapter.notifyDataSetChanged();
-                                                allSiteKeys.remove(removedSiteKey);
+                                                allSiteKeys.remove(currentSiteKey);
                                                 MainActivity.clearAllUserPrefs();
                                                 saveUserPrefValues();
 
