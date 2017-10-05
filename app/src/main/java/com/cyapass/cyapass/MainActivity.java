@@ -878,10 +878,11 @@ public class MainActivity extends AppCompatActivity {
                         //DiscoverAvailableDevices();
                     }
 
-                hidePatternCheckbox.setOnClickListener(new View.OnClickListener() {
+                hidePatternCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
-                    public void onClick(View view) {
-                        if (hidePatternCheckbox.isChecked()){
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        Log.d("MainActivity", "hidePatternCheckbox isChecked : " + String.valueOf(isChecked));
+                        if (isChecked){
                             gv.setPatternHidden(true);
                             gv.ClearGrid();
                             //gv.invalidate();
