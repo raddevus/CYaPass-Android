@@ -334,6 +334,7 @@ public class MainActivity extends AppCompatActivity {
         private static CheckBox addUpperCaseTabCheckBox;
         private static CheckBox maxLengthTabCheckBox;
         private static EditText maxLengthTabEditText;
+        // clearbutton seems to always work when the gv is NOT static.
         private GridView gv;
 
         public PlaceholderFragment() {
@@ -632,7 +633,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onResume() {
             super.onResume();
-
+            if (gv != null) {
+                gv.invalidate();
+            }
+            {
+                Log.d("MainActivity", "onResume : gv is null");
+            }
             Log.d("MainActivity", "onResume : " + getArguments().getInt(ARG_SECTION_NUMBER));
             switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
                 case 1: {
@@ -970,6 +976,7 @@ public class MainActivity extends AppCompatActivity {
 
                         @Override
                         public void afterTextChanged(Editable s) {
+                            if (currentSiteKey == null){return;}
                             MainActivity.specialChars = s.toString();
                             if (currentSiteKey.isHasSpecialChars()){
                                 gv.GeneratePassword();
