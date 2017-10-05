@@ -334,6 +334,7 @@ public class MainActivity extends AppCompatActivity {
         private static CheckBox addUpperCaseTabCheckBox;
         private static CheckBox maxLengthTabCheckBox;
         private static EditText maxLengthTabEditText;
+        private GridView gv;
 
         public PlaceholderFragment() {
         }
@@ -669,7 +670,7 @@ public class MainActivity extends AppCompatActivity {
             loadCurrentDeviceName();
 
             //final GridView gv = new us.raddev.com.cyapass.cyapass.GridView(rootView.getContext());
-            final GridView gv = new com.cyapass.cyapass.GridView(appContext);
+            gv = new com.cyapass.cyapass.GridView(appContext);
 
             rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
