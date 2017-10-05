@@ -85,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
     static CheckBox hidePatternCheckbox;
     private static List<SiteKey> allSiteKeys;
     public static SiteKey currentSiteKey;
+    TabLayout tabLayout;
+    public static GridView gvCopy;
 
     private LinearLayout layout1;
 
@@ -130,8 +132,26 @@ public class MainActivity extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+        tabLayout.setWillNotDraw(false);
+        tabLayout.setOnTabSelectedListener(
+            new TabLayout.ViewPagerOnTabSelectedListener(mViewPager) {
+                    @Override
+                    public void onTabSelected(TabLayout.Tab tab) {
+                        super.onTabSelected(tab);
+                        Log.d("MainActivity", "tab position : " + String.valueOf(tab.getPosition()));
+                        if (tab.getPosition() == 0){
+                            Log.d("MainActivity", "in tab pos 0");
+                            if (gvCopy != null){
+                                Log.d("MainActivity", "gvCopy NOT NULL!");
+                                gvCopy.ClearGrid();
+                                gvCopy.invalidate();
+                                gvCopy = null;
+                            }
+                        }
+                    }
+                });
 
         FloatingActionButton sendFab = (FloatingActionButton)findViewById(R.id.sendFab);
         sendFab.setOnClickListener(new View.OnClickListener() {
@@ -900,7 +920,8 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("MainActivity", "hidePatternCheckbox isChecked : " + String.valueOf(isChecked));
                         if (isChecked){
                             gv.setPatternHidden(true);
-                            gv.ClearGrid();
+                            //gv.ClearGrid();
+                            gvCopy = gv;
                             //gv.invalidate();
                         }
                         else{
