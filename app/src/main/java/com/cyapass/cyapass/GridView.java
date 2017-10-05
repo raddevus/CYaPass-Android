@@ -30,7 +30,16 @@ public class GridView extends View {
     public int viewWidth;
     public int viewHeight;
     private Point currentPoint;
-    private static UserPath us = new UserPath();
+
+    public static UserPath getUserPath() {
+        return userPath;
+    }
+
+    public static void setUserPath(UserPath userPath) {
+        GridView.userPath = userPath;
+    }
+
+    private static UserPath userPath = new UserPath();
     int hitTestIdx;
     private static boolean isPatternHidden;
 
@@ -84,7 +93,7 @@ public class GridView extends View {
                     currentPoint = new Point(touchX,touchY);
                     if (SelectNewPoint(currentPoint)) {
                         v.invalidate();
-                        us.CalculateGeometricValue();
+                        userPath.CalculateGeometricValue();
                         GeneratePassword();
                     }
                 }
@@ -95,18 +104,18 @@ public class GridView extends View {
 
     public void ClearGrid(){
         if (!isPatternHidden) {
-            us = new UserPath();
+            userPath = new UserPath();
         }
         invalidate();
         vx.invalidate();
     }
 
     public boolean isLineSegmentComplete(){
-        //if (us == null || us.allSegments == null){return false;}
-        Log.d("MainActivity", "size ; " + String.valueOf(us.allSegments.size()));
-        Log.d("MainActivity", "size ; " + String.valueOf(this.us.allSegments.size()));
-        Log.d("MainActivity", "size ; " + String.valueOf(us.allPoints.size()));
-        return Boolean.valueOf(us.allSegments.size() > 0);
+        //if (userPath == null || userPath.allSegments == null){return false;}
+        Log.d("MainActivity", "size ; " + String.valueOf(userPath.allSegments.size()));
+        Log.d("MainActivity", "size ; " + String.valueOf(this.userPath.allSegments.size()));
+        Log.d("MainActivity", "size ; " + String.valueOf(userPath.allPoints.size()));
+        return Boolean.valueOf(userPath.allSegments.size() > 0);
     }
 
     private void DrawUserShape(Canvas canvas){
@@ -115,7 +124,7 @@ public class GridView extends View {
         paint.setStrokeWidth(8);
         paint.setStyle(Paint.Style.STROKE);
 
-        for (Segment s : us.allSegments) {
+        for (Segment s : userPath.allSegments) {
             canvas.drawCircle((float) s.Begin.x,
                     (float) s.Begin.y,
                      highlightOffset, paint);
@@ -131,7 +140,7 @@ public class GridView extends View {
         Log.d("MainActivity", "DrawHighlight()...");
         Log.d("MainActivity", p.toString());
         Paint paint = new Paint();
-        if (us.allPoints.size() == 1) {
+        if (userPath.allPoints.size() == 1) {
             paint.setColor(Color.CYAN);
         }
         else
@@ -154,8 +163,8 @@ public class GridView extends View {
         {
             return false;
         }
-        us.append(currentPoint,hitTestIdx + (hitTestIdx * (hitTestIdx / 6) * 10));
-        us.CalculateGeometricValue();
+        userPath.append(currentPoint,hitTestIdx + (hitTestIdx * (hitTestIdx / 6) * 10));
+        userPath.CalculateGeometricValue();
 
         return true;
     }
@@ -187,7 +196,7 @@ public class GridView extends View {
         }
         SiteKey currentSiteKey = MainActivity.currentSiteKey;
         Log.d("MainActivity", "site: " + currentSiteKey.toString());
-        String text = us.PointValue + currentSiteKey.toString();
+        String text = userPath.PointValue + currentSiteKey.toString();
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(text.getBytes(Charset.forName("UTF-8")));
@@ -286,8 +295,8 @@ public class GridView extends View {
         DrawGridLines();
         if (!isPatternHidden) {
             DrawUserShape(canvas);
-            if (us.allPoints.size() > 0) {
-                DrawHighlight(us.allPoints.get(0));
+            if (userPath.allPoints.size() > 0) {
+                DrawHighlight(userPath.allPoints.get(0));
             }
         }
     }
@@ -301,8 +310,8 @@ public class GridView extends View {
         DrawGridLines();
         if (!isPatternHidden) {
             DrawUserShape(canvas);
-            if (us.allPoints.size() > 0) {
-                DrawHighlight(us.allPoints.get(0));
+            if (userPath.allPoints.size() > 0) {
+                DrawHighlight(userPath.allPoints.get(0));
             }
         }
     }

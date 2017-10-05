@@ -336,6 +336,7 @@ public class MainActivity extends AppCompatActivity {
         private static EditText maxLengthTabEditText;
         // clearbutton seems to always work when the gv is NOT static.
         private GridView gv;
+        private UserPath up;
 
         public PlaceholderFragment() {
         }
@@ -428,7 +429,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
-
         }
 
         private static void initializeSpinnerAdapter(View v){
@@ -631,13 +631,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
+        public void onPause() {
+            super.onPause();
+            if (gv != null){
+                Log.d("MainActivity", "app is pausing");
+                up = gv.getUserPath();
+            }
+        }
+
+        @Override
         public void onResume() {
             super.onResume();
-            if (gv != null) {
-                gv.invalidate();
+            if (gv == null) {
+                gv = new GridView(appContext);
             }
-            {
-                Log.d("MainActivity", "onResume : gv is null");
+            if (up!=null) {
+                gv.setUserPath(up);
             }
             Log.d("MainActivity", "onResume : " + getArguments().getInt(ARG_SECTION_NUMBER));
             switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
@@ -785,6 +794,7 @@ public class MainActivity extends AppCompatActivity {
                             }
 
                             gv.ClearGrid();
+                            up = null;
                             gv.invalidate();
                             password = "";
                             passwordText.setText("");
@@ -959,6 +969,7 @@ public class MainActivity extends AppCompatActivity {
                 maxLengthTabCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (currentSiteKey == null){return;}
                         if (isChecked){
                             currentSiteKey.setMaxLength(Integer.parseInt(maxLengthTabEditText.getText().toString()));
                         }
@@ -973,7 +984,6 @@ public class MainActivity extends AppCompatActivity {
                 });
 
                     specialCharsText.addTextChangedListener(new TextWatcher() {
-
                         @Override
                         public void afterTextChanged(Editable s) {
                             if (currentSiteKey == null){return;}
@@ -996,7 +1006,6 @@ public class MainActivity extends AppCompatActivity {
 
                     });
                     maxLengthTabEditText.addTextChangedListener(new TextWatcher() {
-
                         @Override
                         public void afterTextChanged(Editable s) {
                             if (s != null) {
