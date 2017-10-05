@@ -325,7 +325,8 @@ public class MainActivity extends AppCompatActivity {
         private static String password;
         private static ArrayList<SiteKey> spinnerItems = new ArrayList<SiteKey>();
         private static ArrayAdapter<SiteKey> spinnerAdapter;
-        private View rootView;
+        private static View rootView;
+        private static View settingsView;
         private CheckBox showPwdCheckBox;
         private Spinner siteSpinner;
 
@@ -444,6 +445,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private void setSettingsValues(){
+
+            addUpperCaseTabCheckBox = (CheckBox)rootView.findViewById(R.id.addUCaseTabCheckBox);
+            addCharsTabCheckBox = (CheckBox)rootView.findViewById(R.id.addCharsTabCheckBox);
+            maxLengthTabCheckBox = (CheckBox)rootView.findViewById(R.id.maxLengthTabCheckBox);
+            maxLengthTabEditText = (EditText)rootView.findViewById(R.id.maxLengthTabEditText);
+
             addCharsTabCheckBox.setChecked(currentSiteKey.isHasSpecialChars());
             addUpperCaseTabCheckBox.setChecked(currentSiteKey.isHasUpperCase());
             maxLengthTabCheckBox.setChecked(currentSiteKey.getMaxLength() > 0);
@@ -588,18 +595,70 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onResume() {
-            super.onResume();
-            Log.d("MainActivity", "onResume : " + getArguments().getInt(ARG_SECTION_NUMBER));
+        public void onStart() {
+            super.onStart();
+            Log.d("MainActivity", "onStart : " + getArguments().getInt(ARG_SECTION_NUMBER));
             switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
                 case 1: {
+                    addUpperCaseTabCheckBox = (CheckBox)settingsView.findViewById(R.id.addUCaseTabCheckBox);
+                    addCharsTabCheckBox = (CheckBox)settingsView.findViewById(R.id.addCharsTabCheckBox);
+                    maxLengthTabCheckBox = (CheckBox)settingsView.findViewById(R.id.maxLengthTabCheckBox);
+                    maxLengthTabEditText = (EditText)settingsView.findViewById(R.id.maxLengthTabEditText);
                     break;
                 }
                 case 2: {
+                    addUpperCaseTabCheckBox = (CheckBox)rootView.findViewById(R.id.addUCaseTabCheckBox);
+                    addCharsTabCheckBox = (CheckBox)rootView.findViewById(R.id.addCharsTabCheckBox);
+                    maxLengthTabCheckBox = (CheckBox)rootView.findViewById(R.id.maxLengthTabCheckBox);
+                    maxLengthTabEditText = (EditText)rootView.findViewById(R.id.maxLengthTabEditText);
+
                     break;
                 }
-                case 3:{
+            }
+            if (currentSiteKey != null) {
+                if (addUpperCaseTabCheckBox != null) {
+                    addUpperCaseTabCheckBox.setChecked(currentSiteKey.isHasUpperCase());
+                }
+                if (addCharsTabCheckBox != null) {
+                    addCharsTabCheckBox.setChecked(currentSiteKey.isHasSpecialChars());
+                }
+                if (maxLengthTabCheckBox != null) {
+                    maxLengthTabCheckBox.setChecked(currentSiteKey.getMaxLength() > 0);
+                }
+            }
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+
+            Log.d("MainActivity", "onResume : " + getArguments().getInt(ARG_SECTION_NUMBER));
+            switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
+                case 1: {
+                    addUpperCaseTabCheckBox = (CheckBox)settingsView.findViewById(R.id.addUCaseTabCheckBox);
+                    addCharsTabCheckBox = (CheckBox)settingsView.findViewById(R.id.addCharsTabCheckBox);
+                    maxLengthTabCheckBox = (CheckBox)settingsView.findViewById(R.id.maxLengthTabCheckBox);
+                    maxLengthTabEditText = (EditText)settingsView.findViewById(R.id.maxLengthTabEditText);
                     break;
+                }
+                case 2: {
+                    addUpperCaseTabCheckBox = (CheckBox)rootView.findViewById(R.id.addUCaseTabCheckBox);
+                    addCharsTabCheckBox = (CheckBox)rootView.findViewById(R.id.addCharsTabCheckBox);
+                    maxLengthTabCheckBox = (CheckBox)rootView.findViewById(R.id.maxLengthTabCheckBox);
+                    maxLengthTabEditText = (EditText)rootView.findViewById(R.id.maxLengthTabEditText);
+
+                    break;
+                }
+            }
+            if (currentSiteKey != null) {
+                if (addUpperCaseTabCheckBox != null) {
+                    addUpperCaseTabCheckBox.setChecked(currentSiteKey.isHasUpperCase());
+                }
+                if (addCharsTabCheckBox != null) {
+                    addCharsTabCheckBox.setChecked(currentSiteKey.isHasSpecialChars());
+                }
+                if (maxLengthTabCheckBox != null) {
+                    maxLengthTabCheckBox.setChecked(currentSiteKey.getMaxLength() > 0);
                 }
             }
         }
@@ -634,6 +693,11 @@ public class MainActivity extends AppCompatActivity {
                     loadSitesFromPrefs(rootView);
                     siteSpinner.setAdapter(spinnerAdapter);
 
+                    settingsView = inflater.inflate(R.layout.fragment_settings, container, false);
+                    addUpperCaseTabCheckBox = (CheckBox)settingsView.findViewById(R.id.addUCaseTabCheckBox);
+                    addCharsTabCheckBox = (CheckBox)settingsView.findViewById(R.id.addCharsTabCheckBox);
+                    maxLengthTabCheckBox = (CheckBox)settingsView.findViewById(R.id.maxLengthTabCheckBox);
+                    maxLengthTabEditText = (EditText)settingsView.findViewById(R.id.maxLengthTabEditText);
                     loadSitesFromPrefs(rootView);
 
                     addSiteButton.requestFocus();
