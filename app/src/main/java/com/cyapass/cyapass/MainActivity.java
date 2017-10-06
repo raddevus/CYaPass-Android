@@ -82,11 +82,10 @@ public class MainActivity extends AppCompatActivity {
     Set<BluetoothDevice> pairedDevices;
     BluetoothAdapter btAdapter;
     ConnectThread ct;
-    static CheckBox hidePatternCheckbox;
+
     private static List<SiteKey> allSiteKeys;
     public static SiteKey currentSiteKey;
     TabLayout tabLayout;
-    public static GridView gvCopy;
 
     private LinearLayout layout1;
 
@@ -134,24 +133,6 @@ public class MainActivity extends AppCompatActivity {
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
-        tabLayout.setWillNotDraw(false);
-        tabLayout.setOnTabSelectedListener(
-            new TabLayout.ViewPagerOnTabSelectedListener(mViewPager) {
-                    @Override
-                    public void onTabSelected(TabLayout.Tab tab) {
-                        super.onTabSelected(tab);
-                        Log.d("MainActivity", "tab position : " + String.valueOf(tab.getPosition()));
-                        if (tab.getPosition() == 0){
-                            Log.d("MainActivity", "in tab pos 0");
-                            if (gvCopy != null){
-                                Log.d("MainActivity", "gvCopy NOT NULL!");
-                                gvCopy.ClearGrid();
-                                gvCopy.invalidate();
-                                gvCopy = null;
-                            }
-                        }
-                    }
-                });
 
         FloatingActionButton sendFab = (FloatingActionButton)findViewById(R.id.sendFab);
         sendFab.setOnClickListener(new View.OnClickListener() {
@@ -357,6 +338,8 @@ public class MainActivity extends AppCompatActivity {
         // clearbutton seems to always work when the gv is NOT static.
         private GridView gv;
         private UserPath up;
+
+        static CheckBox hidePatternCheckbox;
 
         public PlaceholderFragment() {
         }
@@ -734,6 +717,7 @@ public class MainActivity extends AppCompatActivity {
                     addCharsTabCheckBox = (CheckBox)settingsView.findViewById(R.id.addCharsTabCheckBox);
                     maxLengthTabCheckBox = (CheckBox)settingsView.findViewById(R.id.maxLengthTabCheckBox);
                     maxLengthTabEditText = (EditText)settingsView.findViewById(R.id.maxLengthTabEditText);
+                    hidePatternCheckbox = (CheckBox)rootView.findViewById(R.id.hidePatternCheckBox);
                     loadSitesFromPrefs(rootView);
 
                     addSiteButton.requestFocus();
@@ -829,6 +813,23 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
 
+                    hidePatternCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                            Log.d("MainActivity", "hidePatternCheckbox isChecked : " + String.valueOf(isChecked));
+                            if (isChecked){
+                                gv.setPatternHidden(true);
+                                gv.ClearGrid();
+                                gv.invalidate();
+                            }
+                            else{
+                                gv.setPatternHidden(false);
+                                gv.invalidate();
+                            }
+
+                        }
+                    });
+
                     deleteSiteButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -892,7 +893,6 @@ public class MainActivity extends AppCompatActivity {
                     specialCharsText = (EditText)rootView.findViewById(R.id.specialCharsTabTextBox);
                     sendCtrlAltDelCheckbox = (CheckBox)rootView.findViewById(R.id.sendCtrlAltDel);
                     sendEnterCheckbox = (CheckBox)rootView.findViewById(R.id.sendEnter);
-                    hidePatternCheckbox = (CheckBox)rootView.findViewById(R.id.hidePatternCheckBox);
 
                     sendEnterCheckbox.setChecked(true);
                     maxLengthTabEditText.setText("32");
@@ -914,22 +914,6 @@ public class MainActivity extends AppCompatActivity {
                         //DiscoverAvailableDevices();
                     }
 
-                hidePatternCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        Log.d("MainActivity", "hidePatternCheckbox isChecked : " + String.valueOf(isChecked));
-                        if (isChecked){
-                            gv.setPatternHidden(true);
-                            //gv.ClearGrid();
-                            gvCopy = gv;
-                            //gv.invalidate();
-                        }
-                        else{
-                            gv.setPatternHidden(false);
-                        }
-
-                    }
-                });
 
                 sendEnterCheckbox.setOnClickListener(new View.OnClickListener() {
                     @Override

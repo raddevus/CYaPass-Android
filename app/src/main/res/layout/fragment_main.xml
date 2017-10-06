@@ -59,15 +59,22 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight=".2"
-            android:text="Show"
+            android:text="Show Pwd"
             android:id="@+id/showPwd"
             android:textSize="5pt"/>
+        <CheckBox
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Hide Pattern"
+            android:layout_weight=".3"
+            android:id="@+id/hidePatternCheckBox"/>
         <Button
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight=".3"
+            android:layout_weight=".2"
             android:text="Clear"
             android:id="@+id/clearGrid"/>
+
     </LinearLayout>
     <ScrollView
         android:id="@+id/scrollView1"
