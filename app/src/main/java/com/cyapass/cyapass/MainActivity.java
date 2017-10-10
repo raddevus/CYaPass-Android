@@ -526,7 +526,8 @@ public class MainActivity extends AppCompatActivity {
             CheckBox specCharsCheckBox = (CheckBox)v.findViewById(R.id.addSpecialCharsCheckBox);
             CheckBox maxLengthCheckBox = (CheckBox)v.findViewById(R.id.setMaxLengthCheckBox);
             EditText maxLengthEditText = (EditText)v.findViewById(R.id.maxLengthEditText);
-
+            Log.d("MainActivity", "key 3 : " + String.valueOf(currentSiteKey.getKey()));
+            Log.d("MainActivity", "maxLength 3 : " + String.valueOf(currentSiteKey.getMaxLength()));
             EditText input = (EditText) v.findViewById(R.id.siteText);
             input.setText(currentSiteKey.getKey());
 
@@ -725,6 +726,8 @@ public class MainActivity extends AppCompatActivity {
                     siteSpinner.setOnLongClickListener(new View.OnLongClickListener() {
                         public boolean onLongClick(View arg0) {
                             currentSiteKey = (SiteKey)siteSpinner.getSelectedItem();
+                            Log.d("MainActivity", "key 2 : " + String.valueOf(currentSiteKey.getKey()));
+                            Log.d("MainActivity", "maxLength 2 : " + String.valueOf(currentSiteKey.getMaxLength()));
                             if (currentSiteKey.getKey().equals("select site")){return false;}
                             Log.d("MainActivity", "LONGCLICK!!!");
                             Log.d("MainActivity", currentSiteKey.getKey());
@@ -751,13 +754,14 @@ public class MainActivity extends AppCompatActivity {
                             }
 
                             currentSiteKey = (SiteKey)siteSpinner.getSelectedItem();
+                            Log.d("MainActivity", "key 1 : " + String.valueOf(currentSiteKey.getKey()));
+                            Log.d("MainActivity", "maxLength 1 : " + String.valueOf(currentSiteKey.getMaxLength()));
                             addCharsTabCheckBox.setChecked(currentSiteKey.isHasSpecialChars());
                             addUpperCaseTabCheckBox.setChecked(currentSiteKey.isHasUpperCase());
-                            maxLengthTabCheckBox.setChecked(currentSiteKey.getMaxLength() > 0);
                             if (currentSiteKey.getMaxLength() > 0) {
                                 maxLengthTabEditText.setText(String.valueOf(currentSiteKey.getMaxLength()));
                             }
-
+                            maxLengthTabCheckBox.setChecked(currentSiteKey.getMaxLength() > 0);
                             if (gv.isLineSegmentComplete()){
                                 gv.GeneratePassword();
                             }
@@ -979,7 +983,7 @@ public class MainActivity extends AppCompatActivity {
                             currentSiteKey.setMaxLength(Integer.parseInt(maxLengthTabEditText.getText().toString()));
                         }
                         else{
-                            currentSiteKey.setMaxLength(64);
+                            currentSiteKey.setMaxLength(0);
                         }
                         if (gv.isLineSegmentComplete()){
                             Log.d("MainActivity", "addChars -- Re-generating password...");
