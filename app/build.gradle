@@ -1,8 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '25.0.0'
+    compileSdkVersion 25
     defaultConfig {
         applicationId 'com.cyapass.cyapass'
         minSdkVersion 15
@@ -28,13 +27,13 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.2.1'
-    compile 'com.android.support:design:23.2.1'
-    compile 'com.google.android.gms:play-services-ads:+'
-    compile 'com.firebase:firebase-client-android:2.3.1'
-    compile 'com.google.code.gson:gson:2.8.2'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    testImplementation 'junit:junit:4.12'
+    implementation 'com.android.support:appcompat-v7:25.2.0'
+    implementation 'com.android.support:design:25.2.0'
+    implementation 'com.google.android.gms:play-services-ads:+'
+    implementation 'com.firebase:firebase-client-android:2.3.1'
+    implementation 'com.google.code.gson:gson:2.8.2'
 }
 
 
