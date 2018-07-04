@@ -7,3 +7,8 @@
 .DS_Store
 /build
 /captures
+vcs.xml
+*.log
+.idea/caches
+.idea/codeStyles
+app/debug

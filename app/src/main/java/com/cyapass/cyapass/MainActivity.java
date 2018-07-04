@@ -415,9 +415,17 @@ public class MainActivity extends AppCompatActivity {
                 if (allSiteKeys == null){
                     allSiteKeys = new ArrayList<SiteKey>();
                 }
+
                 for (SiteKey sk : allSiteKeys){
                     spinnerAdapter.add(sk);
                 }
+                spinnerAdapter.sort(new Comparator<SiteKey>(){
+                    public int compare(SiteKey a1, SiteKey a2) {
+                        return a1.toString().compareToIgnoreCase(a2.toString());
+                    }
+                });
+                spinnerAdapter.insert(new SiteKey("select site"),0);
+
                 spinnerAdapter.notifyDataSetChanged();
             }
             catch (Exception x) {
@@ -439,7 +447,7 @@ public class MainActivity extends AppCompatActivity {
                 spinnerAdapter = new ArrayAdapter<SiteKey>(v.getContext(), android.R.layout.simple_list_item_1, spinnerItems);
             }
             spinnerAdapter.clear();
-            spinnerAdapter.add(new SiteKey("select site"));
+            //spinnerAdapter.add(new SiteKey("select site"));
             spinnerAdapter.sort(new Comparator<SiteKey>(){
                 public int compare(SiteKey a1, SiteKey a2) {
                     return a1.toString().compareToIgnoreCase(a2.toString());
@@ -507,12 +515,9 @@ public class MainActivity extends AppCompatActivity {
                             edit.commit();
                             Log.d("MainActivity", "final outValues : " + outValues);
                             PlaceholderFragment.loadSitesFromPrefs(v);
-                            siteSpinner.setSelection(originalLocation +1,true);
+                            siteSpinner.setSelection(findSiteSpinnerItemByText(currentValue),true);
 
                             setSettingsValues();
-
-
-
                         }
                     })
                     .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
@@ -584,7 +589,8 @@ public class MainActivity extends AppCompatActivity {
                             edit.commit();
                             Log.d("MainActivity", "final outValues : " + outValues);
                             PlaceholderFragment.loadSitesFromPrefs(v);
-                            siteSpinner.setSelection(siteSpinner.getCount() - 1, true);
+
+                            siteSpinner.setSelection(findSiteSpinnerItemByText(currentValue), true);
 
                             setSettingsValues();
                         }
@@ -598,6 +604,17 @@ public class MainActivity extends AppCompatActivity {
             AlertDialog alert = builder.create();
             alert.setView(v);
             alert.show();
+        }
+
+        private int findSiteSpinnerItemByText(String currentSiteKey){
+            Log.d("MainActivity", currentSiteKey);
+            for (int x =0; x < spinnerAdapter.getCount();x++) {
+                if (spinnerAdapter.getItem(x).getKey().equals(currentSiteKey)) {
+                    Log.d("MainActivity", spinnerAdapter.getItem(x).getKey());
+                    return x;
+                }
+            }
+            return 0;
         }
 
         @Override
