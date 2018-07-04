@@ -12,3 +12,4 @@ vcs.xml
 .idea/caches
 .idea/codeStyles
 app/debug
+app/release
