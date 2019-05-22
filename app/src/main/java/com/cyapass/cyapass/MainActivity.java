@@ -133,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
     /** Called before the activity is destroyed */
     @Override
     public void onDestroy() {
+
         super.onDestroy();
     }
 
@@ -439,6 +440,9 @@ public class MainActivity extends AppCompatActivity {
             addCharsTabCheckBox.setChecked(currentSiteKey.isHasSpecialChars());
             addUpperCaseTabCheckBox.setChecked(currentSiteKey.isHasUpperCase());
             maxLengthTabCheckBox.setChecked(currentSiteKey.getMaxLength() > 0);
+            addCharsTabCheckBox.jumpDrawablesToCurrentState();
+            addUpperCaseTabCheckBox.jumpDrawablesToCurrentState();
+            maxLengthTabCheckBox.jumpDrawablesToCurrentState();
             if (currentSiteKey.getMaxLength() > 0) {
                 maxLengthTabEditText.setText(String.valueOf(currentSiteKey.getMaxLength()));
             }
@@ -621,6 +625,9 @@ public class MainActivity extends AppCompatActivity {
                     maxLengthTabCheckBox.setChecked(currentSiteKey.getMaxLength() > 0);
                 }
             }
+            addCharsTabCheckBox.jumpDrawablesToCurrentState();
+            addUpperCaseTabCheckBox.jumpDrawablesToCurrentState();
+            maxLengthTabCheckBox.jumpDrawablesToCurrentState();
         }
 
         @Override
@@ -670,6 +677,9 @@ public class MainActivity extends AppCompatActivity {
                     maxLengthTabCheckBox.setChecked(currentSiteKey.getMaxLength() > 0);
                 }
             }
+            addCharsTabCheckBox.jumpDrawablesToCurrentState();
+            addUpperCaseTabCheckBox.jumpDrawablesToCurrentState();
+            maxLengthTabCheckBox.jumpDrawablesToCurrentState();
         }
 
         @Override
@@ -856,6 +866,9 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                     });
+                    addCharsTabCheckBox.jumpDrawablesToCurrentState();
+                    addUpperCaseTabCheckBox.jumpDrawablesToCurrentState();
+                    maxLengthTabCheckBox.jumpDrawablesToCurrentState();
                     break;
                 }
                 case 2:
